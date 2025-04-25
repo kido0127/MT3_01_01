@@ -2,6 +2,7 @@
 #include <Novice.h>
 #include <cmath>
 
+
 /// <summary>
 /// 3次元ベクトルを表す構造体
 /// </summary>

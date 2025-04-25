@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include <Novice.h>
 #include <cmath>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 #pragma region 定義
 /// <summary>
 /// 3次元ベクトルを表す構造体
@@ -19,11 +22,20 @@ struct Matrix4x4 {
 #pragma region 定数
 // 横幅
 static const int kColuwidth = 60;
+static const int kColumnWidth = 60;
 // 縦幅
 static const int kRowHeight = 20;
 // 画面の大きさ
 const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
+//カメラの初期値
+ // カメラの初期位置
+Vector3 cameraPosition = { 0.0f, 1.9f, -6.49f };
+// カメラの回転
+Vector3 cameraRotation = { 0.26f, 0.0f, 0.0f };
+
+
+
 #pragma endregion
 #pragma region 関数宣言 
 /// <summary>
@@ -216,6 +228,13 @@ Vector3 TransformVector(const Vector3& vector, const Matrix4x4& matrix);
 /// <param name="v2">ベクトル2</param>
 /// <returns>クロス積の結果</returns>
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
+/// <summary>
+/// 3Dグリッドの表示
+/// </summary>
+/// <param name="viewProjectionMatrix"></param>
+/// <param name="viewportMatrix"></param>
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示
@@ -242,4 +261,11 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2);
 // 148行目: MakeViewportMatrix: ビューポート行列を作成
 // 154行目: TransformVector: ベクトルを行列で変換
 // 160行目: Cross: クロス積を計算
+#pragma endregion
+#pragma region Sphere（球関連）
+struct Sphere {
+    Vector3 center;
+    float radius;
+};
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 #pragma endregion

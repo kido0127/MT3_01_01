@@ -294,5 +294,120 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2) {
     };
 }
 
+/// <summary>
+/// ワールド座標をスクリーン座標に変換する
+/// </summary>
+/// <param name="worldPosition">ワールド座標</param>
+/// <param name="viewProjectionMatrix">ビュー・プロジェクション行列</param>
+/// <param name="viewportMatrix">ビューポート行列</param>
+/// <returns>スクリーン座標</returns>
+Vector3 TransformToScreen(const Vector3& worldPosition, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+    // ワールド座標をビュー・プロジェクション行列で変換
+    Vector3 ndcPosition = TransformVector(worldPosition, viewProjectionMatrix);
+    // NDC座標をビューポート行列で変換
+    return TransformVector(ndcPosition, viewportMatrix);
+}
+
+/// <summary>
+/// グリッドを描画する
+/// </summary>
+/// <param name="viewProjectionMatrix">ビュー・プロジェクション行列</param>
+/// <param name="viewportMatrix">ビューポート行列</param>
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+    const float kGridHalfWidth = 2.0f; // グリッドの半分の幅
+    const uint32_t kSubdivision = 10; // グリッドの分割数
+    const float kGridSize = (kGridHalfWidth * 2.0f) / kSubdivision; // グリッドの1マスのサイズ
+
+    // 奥から手前へ線を順々に引いていく
+    for (uint32_t xIndex = 0; xIndex <= kSubdivision; xIndex++) {
+        // ワールド座標系上の視点と終点を求める
+        Vector3 start = { -kGridHalfWidth + xIndex * kGridSize, 0.0f, -kGridHalfWidth };
+        Vector3 end = { -kGridHalfWidth + xIndex * kGridSize, 0.0f, kGridHalfWidth };
+
+        // スクリーン座標系まで変換をかける
+        Vector3 screenStart = TransformToScreen(start, viewProjectionMatrix, viewportMatrix);
+        Vector3 screenEnd = TransformToScreen(end, viewProjectionMatrix, viewportMatrix);
+
+        // 変換した座標を使って表示
+        Novice::DrawLine(static_cast<int>(screenStart.x), static_cast<int>(screenStart.y),
+            static_cast<int>(screenEnd.x), static_cast<int>(screenEnd.y), 0xAAAAAAFF);
+    }
+
+    // 左から右に線を順々に引いていく
+    for (uint32_t zIndex = 0; zIndex <= kSubdivision; zIndex++) {
+        // ワールド座標系上の視点と終点を求める
+        Vector3 start = { -kGridHalfWidth, 0.0f, -kGridHalfWidth + zIndex * kGridSize };
+        Vector3 end = { kGridHalfWidth, 0.0f, -kGridHalfWidth + zIndex * kGridSize };
+
+        // スクリーン座標系まで変換をかける
+        Vector3 screenStart = TransformToScreen(start, viewProjectionMatrix, viewportMatrix);
+        Vector3 screenEnd = TransformToScreen(end, viewProjectionMatrix, viewportMatrix);
+
+        // 変換した座標を使って表示
+        Novice::DrawLine(static_cast<int>(screenStart.x), static_cast<int>(screenStart.y),
+            static_cast<int>(screenEnd.x), static_cast<int>(screenEnd.y), 0xAAAAAAFF);
+    }
+}
+
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix)
+{
+    const uint32_t kSubdivision = 20; // 球の分割数
+    const float kLonEvery = 2.0f * M_PI / kSubdivision; // 経度の間隔
+    const float kLatEvery = M_PI / kSubdivision; // 緯度の間隔
+
+    // 緯度の方向に分割
+    for (uint32_t latIndex = 0; latIndex < kSubdivision; latIndex++) {
+        float lat = -M_PI / 2.0f + kLatEvery * latIndex;
+        float nextLat = lat + kLatEvery;
+
+        // 経度の方向に分割
+        for (uint32_t lonIndex = 0; lonIndex < kSubdivision; lonIndex++) {
+            float lon = kLonEvery * lonIndex;
+            float nextLon = lon + kLonEvery;
+
+            // ワールド座標系で a, b, c, d を求める
+            Vector3 a = {
+                sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon),
+                sphere.center.y + sphere.radius * std::sin(lat),
+                sphere.center.z + sphere.radius * std::cos(lat) * std::sin(lon)
+            };
+
+            Vector3 b = {
+                sphere.center.x + sphere.radius * std::cos(nextLat) * std::cos(lon),
+                sphere.center.y + sphere.radius * std::sin(nextLat),
+                sphere.center.z + sphere.radius * std::cos(nextLat) * std::sin(lon)
+            };
+
+            Vector3 c = {
+                sphere.center.x + sphere.radius * std::cos(lat) * std::cos(nextLon),
+                sphere.center.y + sphere.radius * std::sin(lat),
+                sphere.center.z + sphere.radius * std::cos(lat) * std::sin(nextLon)
+            };
+
+            Vector3 d = {
+                sphere.center.x + sphere.radius * std::cos(nextLat) * std::cos(nextLon),
+                sphere.center.y + sphere.radius * std::sin(nextLat),
+                sphere.center.z + sphere.radius * std::cos(nextLat) * std::sin(nextLon)
+            };
+
+            // a, b, c, d をスクリーン座標系まで変換
+            Vector3 screenA = TransformToScreen(a, viewProjectionMatrix, viewportMatrix);
+            Vector3 screenB = TransformToScreen(b, viewProjectionMatrix, viewportMatrix);
+            Vector3 screenC = TransformToScreen(c, viewProjectionMatrix, viewportMatrix);
+            Vector3 screenD = TransformToScreen(d, viewProjectionMatrix, viewportMatrix);
+
+            // ab, ac, bd, cd で線を引く
+            Novice::DrawLine(static_cast<int>(screenA.x), static_cast<int>(screenA.y),
+                static_cast<int>(screenB.x), static_cast<int>(screenB.y), 0xAAAAAAFF);
+            Novice::DrawLine(static_cast<int>(screenA.x), static_cast<int>(screenA.y),
+                static_cast<int>(screenC.x), static_cast<int>(screenC.y), 0xAAAAAAFF);
+            Novice::DrawLine(static_cast<int>(screenB.x), static_cast<int>(screenB.y),
+                static_cast<int>(screenD.x), static_cast<int>(screenD.y), 0xAAAAAAFF);
+            Novice::DrawLine(static_cast<int>(screenC.x), static_cast<int>(screenC.y),
+                static_cast<int>(screenD.x), static_cast<int>(screenD.y), 0xAAAAAAFF);
+        }
+    }
+}
+
 
 #pragma endregion

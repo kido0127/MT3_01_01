@@ -285,7 +285,14 @@ Vector3 TransformVector(const Vector3& vector, const Matrix4x4& matrix) {
     result.z = (vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2]) / w;
     return result;
 }
-
+// クロス積を計算する
+Vector3 Cross(const Vector3& v1, const Vector3& v2) {
+    return {
+        v1.y * v2.z - v1.z * v2.y,
+        v1.z * v2.x - v1.x * v2.z,
+        v1.x * v2.y - v1.y * v2.x
+    };
+}
 
 
 #pragma endregion

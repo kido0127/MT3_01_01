@@ -1,23 +1,4 @@
 ﻿#include "function.h"
-#pragma region 定義
-/// <summary>
-/// 3次元ベクトルを表す構造体
-/// </summary>
-struct Vector3 {
-    float x, y, z;
-};
-
-/// <summary>
-/// 4x4行列を表す構造体
-/// </summary>
-struct Matrix4x4 {
-    float m[4][4];
-};
-
-static const int kColuwidth = 60;
-static const int kRowHeight = 20;
-static const int kColumnWidth = 60;
-#pragma endregion
 #pragma region 数値表示関数
 /// <summary>
 /// 3次元ベクトルを画面に表示する
@@ -193,13 +174,27 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
     Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
     return Multiply(Multiply(scaleMatrix, rotateMatrix), translateMatrix);
 }
-// ベクトルを行列で変換する
-Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
-    Vector3 result;
-    float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + matrix.m[3][3];
-    result.x = (vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0]) / w;
-    result.y = (vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1]) / w;
-    result.z = (vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2]) / w;
+//// ベクトルを行列で変換する
+//Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
+//    Vector3 result;
+//    float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + matrix.m[3][3];
+//    result.x = (vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0]) / w;
+//    result.y = (vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1]) / w;
+//    result.z = (vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2]) / w;
+//    return result;
+//}
+/// <summary>
+/// 行列の転置を計算する
+/// </summary>
+/// <param name="m">元の行列</param>
+/// <returns>転置された行列</returns>
+Matrix4x4 Transpose(const Matrix4x4& m) {
+    Matrix4x4 result = {};
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            result.m[i][j] = m.m[j][i];
+        }
+    }
     return result;
 }
 Matrix4x4 Inverse(const Matrix4x4& m) {
@@ -280,6 +275,14 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
     result.m[3][2] = minDepth;
     result.m[3][3] = 1.0f;
 
+    return result;
+}
+Vector3 TransformVector(const Vector3& vector, const Matrix4x4& matrix) {
+    Vector3 result;
+    float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + matrix.m[3][3];
+    result.x = (vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + matrix.m[3][0]) / w;
+    result.y = (vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + matrix.m[3][1]) / w;
+    result.z = (vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + matrix.m[3][2]) / w;
     return result;
 }
 

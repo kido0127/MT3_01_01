@@ -352,12 +352,12 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
 void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix)
 {
     const uint32_t kSubdivision = 20; // 球の分割数
-    const float kLonEvery = 2.0f * M_PI / kSubdivision; // 経度の間隔
-    const float kLatEvery = M_PI / kSubdivision; // 緯度の間隔
+    const float kLonEvery = 2.0f * float(M_PI) / kSubdivision; // 経度の間隔
+    const float kLatEvery = float(M_PI) / kSubdivision; // 緯度の間隔
 
     // 緯度の方向に分割
     for (uint32_t latIndex = 0; latIndex < kSubdivision; latIndex++) {
-        float lat = -M_PI / 2.0f + kLatEvery * latIndex;
+        float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;
         float nextLat = lat + kLatEvery;
 
         // 経度の方向に分割
@@ -365,7 +365,7 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
             float lon = kLonEvery * lonIndex;
             float nextLon = lon + kLonEvery;
 
-            // ワールド座標系で a, b, c, d を求める
+            // ワールド座標系で A, B, C を求める
             Vector3 a = {
                 sphere.center.x + sphere.radius * std::cos(lat) * std::cos(lon),
                 sphere.center.y + sphere.radius * std::sin(lat),
@@ -384,29 +384,19 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
                 sphere.center.z + sphere.radius * std::cos(lat) * std::sin(nextLon)
             };
 
-            Vector3 d = {
-                sphere.center.x + sphere.radius * std::cos(nextLat) * std::cos(nextLon),
-                sphere.center.y + sphere.radius * std::sin(nextLat),
-                sphere.center.z + sphere.radius * std::cos(nextLat) * std::sin(nextLon)
-            };
-
-            // a, b, c, d をスクリーン座標系まで変換
+            // A, B, C をスクリーン座標系まで変換
             Vector3 screenA = TransformToScreen(a, viewProjectionMatrix, viewportMatrix);
             Vector3 screenB = TransformToScreen(b, viewProjectionMatrix, viewportMatrix);
             Vector3 screenC = TransformToScreen(c, viewProjectionMatrix, viewportMatrix);
-            Vector3 screenD = TransformToScreen(d, viewProjectionMatrix, viewportMatrix);
 
-            // ab, ac, bd, cd で線を引く
+            // AB, BC の線を描画
             Novice::DrawLine(static_cast<int>(screenA.x), static_cast<int>(screenA.y),
                 static_cast<int>(screenB.x), static_cast<int>(screenB.y), 0xAAAAAAFF);
-            Novice::DrawLine(static_cast<int>(screenA.x), static_cast<int>(screenA.y),
-                static_cast<int>(screenC.x), static_cast<int>(screenC.y), 0xAAAAAAFF);
             Novice::DrawLine(static_cast<int>(screenB.x), static_cast<int>(screenB.y),
-                static_cast<int>(screenD.x), static_cast<int>(screenD.y), 0xAAAAAAFF);
-            Novice::DrawLine(static_cast<int>(screenC.x), static_cast<int>(screenC.y),
-                static_cast<int>(screenD.x), static_cast<int>(screenD.y), 0xAAAAAAFF);
+                static_cast<int>(screenC.x), static_cast<int>(screenC.y), 0xAAAAAAFF);
         }
     }
+
 }
 
 

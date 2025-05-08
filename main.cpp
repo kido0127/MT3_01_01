@@ -1,4 +1,4 @@
-
+#include <imgui.h>
 #include "function.h"
 
 const char kWindowTitle[] = "MT3_01_02";
@@ -9,12 +9,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // ライブラリの初期化
     Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
 
-   
+    Vector3 cameraTranslate = { 0.0f, 1.9f, -6.49f };
+    Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
+    Vector3 sphereCenter = { 0.0f, 0.0f, 0.0f };
+    float sphereRadius = 1.0f; // 初期値
 
     // 球の定義
     Sphere sphere = {
-        { 0.0f, 0.0f, 0.0f }, // 中心座標
-        1.0f                  // 半径
+        sphereCenter, // 中心座標
+     sphereRadius
     };
 
     // キー入力結果を受け取る箱
@@ -37,8 +40,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         // カメラ行列を作成
         Matrix4x4 cameraMatrix = MakeAffineMatrix(
             { 1.0f, 1.0f, 1.0f }, // スケール
-            cameraRotation,       // 回転
-            cameraPosition        // 平行移動
+           cameraRotate,      // 回転
+            cameraTranslate        // 平行移動
         );
 
         // ビュー行列を計算（カメラ行列の逆行列）
@@ -60,7 +63,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ///
         /// ↑更新処理ここまで
         ///
-
+        
         ///
         /// ↓描画処理ここから
         ///
@@ -70,6 +73,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
         // 球を描画
         DrawSphere(sphere, viewProjectionMatrix, viewportMatrix);
+
+
+        ImGui::Begin("Window");
+        ImGui::DragFloat3("CameraTranslate",&cameraTranslate.x,0.01f);
+          ImGui::DragFloat3("CameraRotate",&cameraRotate.x,0.01f);
+          ImGui::DragFloat3("SphereCenter",&sphere.center.x,0.01f);
+          ImGui::DragFloat("SphereRadius",&sphere.radius,0.01f);
+        ImGui::End();
+
+
 
         ///
         /// ↑描画処理ここまで

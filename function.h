@@ -1,9 +1,13 @@
 ﻿#pragma once
 #include <Novice.h>
 #include <cmath>
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
+
+
+
 #pragma region 定義
 /// <summary>
 /// 3次元ベクトルを表す構造体
@@ -30,10 +34,9 @@ const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
 //カメラの初期値
  // カメラの初期位置
-Vector3 cameraPosition = { 0.0f, 1.9f, -6.49f };
+//extern Vector3 cameraPosition = { 0.0f, 1.9f, -6.49f };
 // カメラの回転
-Vector3 cameraRotation = { 0.26f, 0.0f, 0.0f };
-
+//extern Vector3 cameraRotation = { 0.26f, 0.0f, 0.0f };
 
 
 #pragma endregion

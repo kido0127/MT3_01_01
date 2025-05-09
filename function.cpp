@@ -428,5 +428,29 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
         }
     }
 }
+/// <summary>
+/// 球体同士の衝突判定を行う
+/// 球体の中心間の距離が、半径の和よりも小さい場合、衝突しているとみなす
+/// </summary>
+/// <param name="sphere1"></param>
+/// <param name="sphere2"></param>
+bool CheckSphereCollision(const Sphere& sphere1, const Sphere& sphere2)
+{
+    // 球体1と球体2の中心間の二条の距離を計算
+    float distance =
+        (sphere1.center.x - sphere2.center.x) * (sphere1.center.x - sphere2.center.x) +
+        (sphere1.center.y - sphere2.center.y) * (sphere1.center.y - sphere2.center.y) +
+        (sphere1.center.z - sphere2.center.z) * (sphere1.center.z - sphere2.center.z);
+    //半径の合計の２乗を計算
+    float radiusSum = (sphere1.radius + sphere2.radius) * (sphere1.radius + sphere2.radius);
+    // 衝突判定
+    if (distance < radiusSum) {//衝突しているとかえす
+        return true;
+    }
+    else {//衝突していない
+        return false;
+    }
+
+}
 
 #pragma endregion

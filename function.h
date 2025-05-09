@@ -21,15 +21,38 @@ struct Vector3 {
 struct Matrix4x4 {
     float m[4][4];
 };
+#pragma region Sphere（球関連）
+struct Sphere {
+    Vector3 center;
+    float radius;
+};
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+#pragma endregion
+#pragma region Segment（線分関連）
+struct Segment {
+	Vector3 start;
+	Vector3 end;
+};
+
+#pragma endregion
+
+
+
 #pragma endregion
 #pragma region 定数
 // 横幅
 static const int kColuwidth = 60;
+static const int kColumnWidth = 60;
 // 縦幅
 static const int kRowHeight = 20;
+
 // 画面の大きさ
 const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
+
+
+
+
 #pragma endregion
 #pragma region 関数宣言 
 /// <summary>
@@ -222,6 +245,11 @@ Vector3 TransformVector(const Vector3& vector, const Matrix4x4& matrix);
 /// <param name="v2">ベクトル2</param>
 /// <returns>クロス積の結果</returns>
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
+Vector3 TransformToScreen(const Vector3& worldPosition, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+Vector3 Project(const Vector3& v1, const Vector3& v2);
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+void DrawSphere(const  Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix,uint32_t color);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示
@@ -249,3 +277,4 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2);
 // 154行目: TransformVector: ベクトルを行列で変換
 // 160行目: Cross: クロス積を計算
 #pragma endregion
+

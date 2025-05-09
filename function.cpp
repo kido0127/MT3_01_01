@@ -294,6 +294,37 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2) {
     };
 }
 
+//正射影ベクトル
+Vector3 Project(const Vector3& v1, const Vector3& v2)
+{
+	//v1をv2に射影したベクトルを求める（ベクトル射影）
+	float dot = Dot(v1, v2);
+	float length = Length(v2);
+	if (length != 0) {
+		float scale = dot / (length * length);
+		return Multiply(scale, v2);//これが正射影ベクトル？
+	}
+	
+    return Vector3();
+}
+
+//最近接点を求める
+Vector3 ClosestPoint(const Vector3& point, const Segment& segment)
+{
+	Vector3 segmentVector = Subtract(segment.end, segment.start);
+	Vector3 pointVector = Subtract(point, segment.start);
+	float t = Dot(pointVector, segmentVector) / Dot(segmentVector, segmentVector);
+	if (t < 0.0f) {
+		return segment.start; // 最近接点は始点
+	}
+	if (t > 1.0f) {
+		return segment.end; // 最近接点は終点
+	}
+	Vector3 closestPoint = Add(segment.start, Multiply(t, segmentVector));
+	return closestPoint; // 最近接点
+
+}
+
 /// <summary>
 /// ワールド座標をスクリーン座標に変換する
 /// </summary>
@@ -349,7 +380,7 @@ void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMa
     }
 }
 
-void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix)
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix,uint32_t color)
 {
     const uint32_t kSubdivision = 20; // 球の分割数
     const float kLonEvery = 2.0f * float(M_PI) / kSubdivision; // 経度の間隔
@@ -391,9 +422,9 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
 
             // AB, BC の線を描画
             Novice::DrawLine(static_cast<int>(screenA.x), static_cast<int>(screenA.y),
-                static_cast<int>(screenB.x), static_cast<int>(screenB.y), 0xAAAAAAFF);
+                static_cast<int>(screenB.x), static_cast<int>(screenB.y), color);
             Novice::DrawLine(static_cast<int>(screenB.x), static_cast<int>(screenB.y),
-                static_cast<int>(screenC.x), static_cast<int>(screenC.y), 0xAAAAAAFF);
+                static_cast<int>(screenC.x), static_cast<int>(screenC.y), color);
         }
     }
 }

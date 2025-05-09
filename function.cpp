@@ -398,5 +398,4 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
     }
 }
 
-
 #pragma endregion

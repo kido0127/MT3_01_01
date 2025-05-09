@@ -250,6 +250,14 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 void DrawSphere(const  Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+bool CheckSphereCollision(const Sphere& sphere1, const Sphere& sphere2);
+
+
+
+
+
+
+
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

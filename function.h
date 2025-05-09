@@ -1,6 +1,12 @@
 ﻿#pragma once
 #include <Novice.h>
 #include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+
 #pragma region 定義
 /// <summary>
 /// 3次元ベクトルを表す構造体

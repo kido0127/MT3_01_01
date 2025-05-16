@@ -672,15 +672,47 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
     }
 }
 bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere) {
-	// AABBの中心と半径を取得
-	Vector3 aabbCenter = { (aabb.min.x + aabb.max.x) / 2.0f, (aabb.min.y + aabb.max.y) / 2.0f, (aabb.min.z + aabb.max.z) / 2.0f };
-	Vector3 aabbHalfSize = { (aabb.max.x - aabb.min.x) / 2.0f, (aabb.max.y - aabb.min.y) / 2.0f, (aabb.max.z - aabb.min.z) / 2.0f };
-	// 球の中心とAABBの中心の距離を計算
-	Vector3 delta = sphere.center - aabbCenter;
-	float distanceSquared = Dot(delta, delta);
-	// AABBの半径を計算
-	float radiusSquared = sphere.radius * sphere.radius;
-	// 衝突判定
-	return distanceSquared <= radiusSquared;
+    // AABBの中心と半径を取得
+    Vector3 aabbCenter = { (aabb.min.x + aabb.max.x) / 2.0f, (aabb.min.y + aabb.max.y) / 2.0f, (aabb.min.z + aabb.max.z) / 2.0f };
+    Vector3 aabbHalfSize = { (aabb.max.x - aabb.min.x) / 2.0f, (aabb.max.y - aabb.min.y) / 2.0f, (aabb.max.z - aabb.min.z) / 2.0f };
+    // 球の中心とAABBの中心の距離を計算
+    Vector3 delta = sphere.center - aabbCenter;
+    float distanceSquared = Dot(delta, delta);
+    // AABBの半径を計算
+    float radiusSquared = sphere.radius * sphere.radius;
+    // 衝突判定
+    return distanceSquared <= radiusSquared;
 }
+bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment) {
+    Vector3 dir = segment.end - segment.start;
+    Vector3 invDir = {
+        1.0f / (dir.x != 0.0f ? dir.x : 0.00001f),
+        1.0f / (dir.y != 0.0f ? dir.y : 0.00001f),
+        1.0f / (dir.z != 0.0f ? dir.z : 0.00001f)
+    };
+
+    Vector3 t1 = (aabb.min - segment.start) * invDir;
+    Vector3 t2 = (aabb.max - segment.start) * invDir;
+
+    Vector3 tMin = {
+        std::fmin(t1.x, t2.x),
+        std::fmin(t1.y, t2.y),
+        std::fmin(t1.z, t2.z),
+    };
+    Vector3 tMax = {
+        std::fmax(t1.x, t2.x),
+        std::fmax(t1.y, t2.y),
+        std::fmax(t1.z, t2.z),
+    };
+
+    float tNear = std::fmax(std::fmax(tMin.x, tMin.y), tMin.z);
+    float tFar = std::fmin(std::fmin(tMax.x, tMax.y), tMax.z);
+
+    // 交差していない
+    if (tNear > tFar || tFar < 0.0f || tNear > 1.0f) {
+        return false;
+    }
+    return true;
+}
+
 #pragma endregion

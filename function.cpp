@@ -670,5 +670,16 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
             static_cast<int>(p2.x), static_cast<int>(p2.y), color);
     }
 }
-
+bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere) {
+	// AABBの中心と半径を取得
+	Vector3 aabbCenter = { (aabb.min.x + aabb.max.x) / 2.0f, (aabb.min.y + aabb.max.y) / 2.0f, (aabb.min.z + aabb.max.z) / 2.0f };
+	Vector3 aabbHalfSize = { (aabb.max.x - aabb.min.x) / 2.0f, (aabb.max.y - aabb.min.y) / 2.0f, (aabb.max.z - aabb.min.z) / 2.0f };
+	// 球の中心とAABBの中心の距離を計算
+	Vector3 delta = sphere.center - aabbCenter;
+	float distanceSquared = Dot(delta, delta);
+	// AABBの半径を計算
+	float radiusSquared = sphere.radius * sphere.radius;
+	// 衝突判定
+	return distanceSquared <= radiusSquared;
+}
 #pragma endregion

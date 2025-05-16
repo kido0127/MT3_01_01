@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <Novice.h>
 #include <cmath>
+#include <algorithm>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -296,6 +297,7 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
 
 bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

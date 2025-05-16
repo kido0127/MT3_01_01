@@ -555,5 +555,20 @@ void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vecto
     *outB = Add(A, tangent);   // A点からtangent方向に1進んだ点
     *outC = Add(A, bitangent); // A点からbitangent方向に1進んだ点
 }
-
+bool CheckSegmentToPlaneCollision(const Segment& segment, const Plane& plane) {
+	// 平面の法線を求める
+	Vector3 normal = Normalize(plane.normal);
+	// 平面の方程式の D を求める
+	float D = -Dot(normal, Multiply(plane.distance, normal));
+	// 線分の始点と終点を平面の方程式に代入して距離を計算
+	float distanceStart = Dot(normal, segment.start) + D;
+	float distanceEnd = Dot(normal, segment.end) + D;
+	// 衝突判定 (距離が0以下なら衝突)
+	if (distanceStart * distanceEnd <= 0.0f) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 #pragma endregion

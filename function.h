@@ -44,6 +44,9 @@ struct Vector3 {
 struct Vector4 {
     float x, y, z, w;
 };;
+struct Matrix3x3 {
+	float m[3][3];
+};
 /// <summary>
 /// 4x4行列を表す構造体
 /// </summary>
@@ -82,6 +85,14 @@ struct Triangle {
 struct AABB {
 	Vector3 min; // 最小点
 	Vector3 max; // 最大点
+};
+#pragma endregion
+#pragma region OBB （軸平行境界ボックス）
+struct OBB {
+	Vector3 center; // 中心点
+	Vector3 size; // 半径
+	Vector3 orientations[3]; // 各軸のベクトル
+   
 };
 #pragma endregion
 #pragma region 定数
@@ -311,7 +322,11 @@ bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere);
 
-bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment)
+bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment);
+Vector3 MultiplyVectorByMatrixTranspose(const Vector3& v, const Vector3 m[3]);
+Vector3 InverseTransformPoint(const Vector3& point, const OBB& obb);
+bool OBBToSphereIsCollision(const OBB& obb, const Sphere sphere);
+void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

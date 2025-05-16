@@ -714,5 +714,68 @@ bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment) {
     }
     return true;
 }
+Vector3 MultiplyVectorByMatrixTranspose(const Vector3& v, const Vector3 m[3]) {
+    return {
+        v.x * m[0].x + v.y * m[1].x + v.z * m[2].x,
+        v.x * m[0].y + v.y * m[1].y + v.z * m[2].y,
+        v.x * m[0].z + v.y * m[1].z + v.z * m[2].z,
+    };
+}
+
+Vector3 InverseTransformPoint(const Vector3& point, const OBB& obb) {
+    Vector3 localPoint = point - obb.center;
+    return MultiplyVectorByMatrixTranspose(localPoint, obb.orientations);
+}
+
+
+bool OBBToSphereIsCollision(const OBB& obb, const Sphere sphere) {
+    // 1. 球の中心をOBBのローカル座標系に変換（OBBの逆回転＋逆平行移動）
+    Vector3 localCenter = InverseTransformPoint(sphere.center, obb);
+
+    // 2. OBBの各軸方向の範囲にクランプ（OBBの半分サイズが extents）
+    Vector3 closestPoint;
+    closestPoint.x = std::clamp(localCenter.x, -obb.size.x, obb.size.x);
+    closestPoint.y = std::clamp(localCenter.y, -obb.size.y, obb.size.y);
+    closestPoint.z = std::clamp(localCenter.z, -obb.size.z, obb.size.z);
+
+    // 3. クランプ点と球中心点の距離を計算
+    Vector3 diff = localCenter - closestPoint;
+    float distanceSquared = Dot(diff, diff);
+
+    // 4. 半径との比較
+    return distanceSquared <= (sphere.radius * sphere.radius);
+}
+void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+    Vector3 extentX = obb.orientations[0] * obb.size.x;
+    Vector3 extentY = obb.orientations[1] * obb.size.y;
+    Vector3 extentZ = obb.orientations[2] * obb.size.z;
+
+    Vector3 vertices[8];
+    vertices[0] = obb.center + extentX + extentY + extentZ;
+    vertices[1] = obb.center + extentX + extentY - extentZ;
+    vertices[2] = obb.center + extentX - extentY + extentZ;
+    vertices[3] = obb.center + extentX - extentY - extentZ;
+    vertices[4] = obb.center - extentX + extentY + extentZ;
+    vertices[5] = obb.center - extentX + extentY - extentZ;
+    vertices[6] = obb.center - extentX - extentY + extentZ;
+    vertices[7] = obb.center - extentX - extentY - extentZ;
+
+    // 12本の辺を描画
+    DrawSegment({ vertices[0], vertices[1] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[0], vertices[2] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[1], vertices[3] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[2], vertices[3] }, viewProjectionMatrix, viewportMatrix, color);
+
+    DrawSegment({ vertices[4], vertices[5] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[4], vertices[6] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[5], vertices[7] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[6], vertices[7] }, viewProjectionMatrix, viewportMatrix, color);
+
+    DrawSegment({ vertices[0], vertices[4] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[1], vertices[5] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[2], vertices[6] }, viewProjectionMatrix, viewportMatrix, color);
+    DrawSegment({ vertices[3], vertices[7] }, viewProjectionMatrix, viewportMatrix, color);
+}
+
 
 #pragma endregion

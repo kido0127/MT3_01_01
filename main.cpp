@@ -3,7 +3,11 @@
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
 
-
+OBB obb = {
+	{ 0.0f, 0.0f, 0.0f }, // 中心点
+	{ 1.0f, 1.0f, 1.0f }, // 半径
+	{ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } } // 各軸のベクトル
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -67,9 +71,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ImGui::Begin("Window");
         ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
         ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("OBBCenter", &obb.center.x, 0.01f);
+		ImGui::DragFloat3("OBBSize", &obb.size.x, 0.01f);
+		ImGui::DragFloat3("OBBOrientationX", &obb.orientations[0].x, 0.01f);
+		ImGui::DragFloat3("OBBOrientationY", &obb.orientations[1].x, 0.01f);
+		ImGui::DragFloat3("OBBOrientationZ", &obb.orientations[2].x, 0.01f);
 		ImGui::End();
 		
-
+		DrawGrid(viewProjectionMatrix, viewportMatrix);
+		DrawOBB(obb, viewProjectionMatrix, viewportMatrix, color);
 
         ///
         /// ↑描画処理ここまで

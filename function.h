@@ -26,7 +26,7 @@ struct Sphere {
     Vector3 center;
     float radius;
 };
-void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix,uint32_t color);
 #pragma endregion
 #pragma region Segment（線分関連）
 struct Segment {
@@ -35,7 +35,15 @@ struct Segment {
 };
 
 #pragma endregion
+#pragma region Plane(平面関係)
+struct Plane {
+    Vector3 normal;
+    float distance;
+    Vector3 A, B, C;
+};
 
+
+#pragma endregion
 
 
 #pragma endregion
@@ -250,10 +258,12 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 void DrawSphere(const  Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-bool CheckSphereCollision(const Sphere& sphere1, const Sphere& sphere2);
+bool CheckSphereToSphereCollision(const Sphere& sphere1, const Sphere& sphere2);
+bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const Vector3& B, const Vector3& C);
 
-
-
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size);
+Vector3 Vector3ToScalarMultiply(const Vector3& v, float scalar);
+void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vector3* outC);
 
 
 

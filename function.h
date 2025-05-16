@@ -1,6 +1,9 @@
 ﻿#pragma once
 #include <Novice.h>
 #include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <algorithm>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -63,6 +66,12 @@ struct Triangle {
     Vector3 vertices[3];
     float Line;
     float Ray;
+};
+#pragma endregion
+#pragma region AABB（軸平行境界ボックス）
+struct AABB {
+	Vector3 min; // 最小点
+	Vector3 max; // 最大点
 };
 #pragma endregion
 #pragma region 定数
@@ -287,6 +296,11 @@ void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, 
 
 bool TriangleToSegmentIsCollision(const Triangle& triangle, const Segment& segment);
 void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+
 
 
 #pragma endregion

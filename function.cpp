@@ -631,4 +631,44 @@ void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatri
         static_cast<int>(screenB.x), static_cast<int>(screenB.y),
         static_cast<int>(screenC.x), static_cast<int>(screenC.y), color, kFillModeWireFrame);
 }
+bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2) {
+	// AABBの衝突判定
+	return (
+        aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x &&
+		aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y &&
+		aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z);
+}
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+    // AABBの8つの頂点を定義
+    Vector3 vertices[8] = {
+        { aabb.min.x, aabb.min.y, aabb.min.z },
+        { aabb.max.x, aabb.min.y, aabb.min.z },
+        { aabb.min.x, aabb.max.y, aabb.min.z },
+        { aabb.max.x, aabb.max.y, aabb.min.z },
+        { aabb.min.x, aabb.min.y, aabb.max.z },
+        { aabb.max.x, aabb.min.y, aabb.max.z },
+        { aabb.min.x, aabb.max.y, aabb.max.z },
+        { aabb.max.x, aabb.max.y, aabb.max.z }
+    };
+
+    // スクリーン座標に変換
+    for (int i = 0; i < 8; ++i) {
+        vertices[i] = TransformToScreen(vertices[i], viewProjectionMatrix, viewportMatrix);
+    }
+
+    // 12本のエッジを正しい順番で描画
+    int edgeIndices[12][2] = {
+        {0, 1}, {1, 3}, {3, 2}, {2, 0}, // 底面
+        {4, 5}, {5, 7}, {7, 6}, {6, 4}, // 上面
+        {0, 4}, {1, 5}, {2, 6}, {3, 7}  // 垂直方向
+    };
+
+    for (int i = 0; i < 12; ++i) {
+        const Vector3& p1 = vertices[edgeIndices[i][0]];
+        const Vector3& p2 = vertices[edgeIndices[i][1]];
+        Novice::DrawLine(static_cast<int>(p1.x), static_cast<int>(p1.y),
+            static_cast<int>(p2.x), static_cast<int>(p2.y), color);
+    }
+}
+
 #pragma endregion

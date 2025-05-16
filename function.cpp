@@ -580,4 +580,55 @@ void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, 
     Novice::DrawLine(static_cast<int>(screenStart.x), static_cast<int>(screenStart.y),
         static_cast<int>(screenEnd.x), static_cast<int>(screenEnd.y), color);
 }
+bool TriangleToSegmentIsCollision(const Triangle& triangle, const Segment& segment) {
+    // 三角形の法線ベクトルを計算
+    Vector3 edge1 = triangle.vertices[1] - triangle.vertices[0];
+    Vector3 edge2 = triangle.vertices[2] - triangle.vertices[0];
+    Vector3 normal = Normalize(Cross(edge1, edge2));
+
+    // 平面の方程式の距離項（d）
+    float d = Dot(normal, triangle.vertices[0]);
+
+    // 線分の始点・終点から平面までの距離
+    float distStart = Dot(normal, segment.start) - d;
+    float distEnd = Dot(normal, segment.end) - d;
+
+    // 同じ側にあるなら交差しない
+    if (distStart * distEnd > 0.0f) return false;
+
+    // 平面との交点を求める
+    float t = distStart / (distStart - distEnd);
+    Vector3 intersection = segment.start + (segment.end - segment.start) * t;
+
+    // バリセントリック座標を使って三角形内か判定
+    Vector3 v0 = triangle.vertices[1] - triangle.vertices[0];
+    Vector3 v1 = triangle.vertices[2] - triangle.vertices[0];
+    Vector3 v2 = intersection - triangle.vertices[0];
+
+    float d00 = Dot(v0, v0);
+    float d01 = Dot(v0, v1);
+    float d11 = Dot(v1, v1);
+    float d20 = Dot(v2, v0);
+    float d21 = Dot(v2, v1);
+
+    float denom = d00 * d11 - d01 * d01;
+    if (denom == 0.0f) return false;
+
+    float u = (d11 * d20 - d01 * d21) / denom;
+    float v = (d00 * d21 - d01 * d20) / denom;
+
+    // 三角形内部にあるなら衝突
+    return (u >= 0.0f && v >= 0.0f && u + v <= 1.0f);
+}
+
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+	// スクリーン座標系まで変換
+	Vector3 screenA = TransformToScreen(triangle.vertices[0], viewProjectionMatrix, viewportMatrix);
+	Vector3 screenB = TransformToScreen(triangle.vertices[1], viewProjectionMatrix, viewportMatrix);
+	Vector3 screenC = TransformToScreen(triangle.vertices[2], viewProjectionMatrix, viewportMatrix);
+	// 変換した座標を使って表示
+	Novice::DrawTriangle(static_cast<int>(screenA.x), static_cast<int>(screenA.y),
+		static_cast<int>(screenB.x), static_cast<int>(screenB.y),
+		static_cast<int>(screenC.x), static_cast<int>(screenC.y), color,kFillModeWireFrame);
+}
 #pragma endregion

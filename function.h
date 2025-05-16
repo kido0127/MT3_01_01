@@ -65,6 +65,12 @@ struct Triangle {
     float Ray;
 };
 #pragma endregion
+#pragma region AABB（軸平行境界ボックス）
+struct AABB {
+	Vector3 min; // 最小点
+	Vector3 max; // 最大点
+};
+#pragma endregion
 #pragma region 定数
 // 横幅
 static const int kColuwidth = 60;
@@ -288,7 +294,8 @@ void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, 
 bool TriangleToSegmentIsCollision(const Triangle& triangle, const Segment& segment);
 void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
-
+bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
+void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

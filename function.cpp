@@ -453,4 +453,107 @@ bool CheckSphereCollision(const Sphere& sphere1, const Sphere& sphere2)
 
 }
 
+/// <summary>
+/// 平面と球の衝突判定を行う
+/// </summary>
+/// <param name="sphere"></param>
+/// <param name="A">平面の任意の点A</param>
+/// <param name="B">平面の任意の点B</param>
+/// <param name="C">平面の任意の点C</param>
+/// /// <param name="任意の点について">関数MakePositionFromPlaneで計算可能</param>
+/// <returns></returns>
+bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const Vector3& B, const Vector3& C) {
+    // 平面の法線を求める
+    Vector3 normal = Normalize(Cross(Subtract(B, A), Subtract(C, B)));
+
+    // 平面の方程式の D を求める
+    float D = -Dot(normal, A);
+
+    // 球の中心から平面への距離を計算
+    float distance = Dot(normal, sphere.center) + D;
+
+    // 衝突判定 (距離の絶対値が球の半径以下なら衝突)
+    if (std::fabs(distance) <= sphere.radius) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+/// <summary>
+/// 平面を描画する
+/// </summary>
+/// <param name="plane"></param>
+/// <param name="viewProjectionMatrix"></param>
+/// <param name="viewportMatrix"></param>
+/// <param name="color"></param>
+/// <param name="size"></param>
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size) {//size = 2.0f
+    // 平面の中心点
+    Vector3 center = Multiply(plane.distance, plane.normal);
+
+    // 平面上の2つの直交ベクトルを生成（安定化対応）
+    Vector3 tangent = Normalize(Cross(Vector3{ 0, 1, 0 }, plane.normal));
+    if (Length(tangent) < 0.001f) {
+        tangent = Normalize(Cross(Vector3{ 1, 0, 0 }, plane.normal));
+    }
+    Vector3 bitangent = Normalize(Cross(plane.normal, tangent));
+
+    // 頂点を計算
+    Vector3 points[4];
+    points[0] = Add(center, Add(Multiply(size, tangent), Multiply(size, bitangent)));
+    points[1] = Add(center, Add(Multiply(-size, tangent), Multiply(size, bitangent)));
+    points[2] = Add(center, Add(Multiply(-size, tangent), Multiply(-size, bitangent)));
+    points[3] = Add(center, Add(Multiply(size, tangent), Multiply(-size, bitangent)));
+
+    // スクリーン座標変換
+    for (int i = 0; i < 4; ++i) {
+        points[i] = TransformToScreen(points[i], viewProjectionMatrix, viewportMatrix);
+    }
+
+    // 四辺を描画
+    for (int i = 0; i < 4; ++i) {
+        int next = (i + 1) % 4;
+        Novice::DrawLine(static_cast<int>(points[i].x), static_cast<int>(points[i].y),
+            static_cast<int>(points[next].x), static_cast<int>(points[next].y), color);
+    }
+}
+/// <summary>
+/// ベクトルとスカラーの積を計算する
+/// </summary>
+/// <param name="v"></param>
+/// <param name="scalar"></param>
+/// <returns></returns>
+Vector3 Vector3ToScalarMultiply(const Vector3& v, float scalar) {
+    return { v.x * scalar, v.y * scalar, v.z * scalar };
+}
+/// <summary>
+/// 平面の任意の三点を求める
+/// </summary>
+/// <param name="plane"></param>
+/// <param name="outA"></param>
+/// <param name="outB"></param>
+/// <param name="outC"></param>
+void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vector3* outC) {
+    // 平面上の任意の1点（原点からdistance分法線の逆方向へ進んだ点）
+    Vector3 A = Vector3ToScalarMultiply(plane.normal, plane.distance); // plane.normal * distance
+
+    // 平面に対して垂直でない方向ベクトルを1つ用意（例：X軸とクロス）
+    Vector3 tangent;
+    if (std::fabs(plane.normal.y) < 0.99f) {
+        tangent = Normalize(Cross(plane.normal, { 0, 1, 0 }));
+    }
+    else {
+        tangent = Normalize(Cross(plane.normal, { 1, 0, 0 }));
+    }
+
+    Vector3 bitangent = Normalize(Cross(plane.normal, tangent));
+
+    *outA = A;
+    *outB = Add(A, tangent);   // A点からtangent方向に1進んだ点
+    *outC = Add(A, bitangent); // A点からbitangent方向に1進んだ点
+}
+
 #pragma endregion

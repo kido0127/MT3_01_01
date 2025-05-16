@@ -728,23 +728,21 @@ Vector3 InverseTransformPoint(const Vector3& point, const OBB& obb) {
 }
 
 
-bool OBBToSphereIsCollision(const OBB& obb, const Sphere sphere) {
+bool OBBToSphereIsCollision(const OBB& obb, const Sphere& sphere) {
     // 1. 球の中心をOBBのローカル座標系に変換（OBBの逆回転＋逆平行移動）
     Vector3 localCenter = InverseTransformPoint(sphere.center, obb);
-
     // 2. OBBの各軸方向の範囲にクランプ（OBBの半分サイズが extents）
     Vector3 closestPoint;
     closestPoint.x = std::clamp(localCenter.x, -obb.size.x, obb.size.x);
     closestPoint.y = std::clamp(localCenter.y, -obb.size.y, obb.size.y);
     closestPoint.z = std::clamp(localCenter.z, -obb.size.z, obb.size.z);
-
     // 3. クランプ点と球中心点の距離を計算
     Vector3 diff = localCenter - closestPoint;
     float distanceSquared = Dot(diff, diff);
-
     // 4. 半径との比較
     return distanceSquared <= (sphere.radius * sphere.radius);
 }
+
 void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
     Vector3 extentX = obb.orientations[0] * obb.size.x;
     Vector3 extentY = obb.orientations[1] * obb.size.y;
@@ -776,6 +774,5 @@ void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix
     DrawSegment({ vertices[2], vertices[6] }, viewProjectionMatrix, viewportMatrix, color);
     DrawSegment({ vertices[3], vertices[7] }, viewProjectionMatrix, viewportMatrix, color);
 }
-
 
 #pragma endregion

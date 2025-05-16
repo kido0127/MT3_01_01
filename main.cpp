@@ -8,6 +8,10 @@ OBB obb = {
 	{ 1.0f, 1.0f, 1.0f }, // 半径
 	{ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } } // 各軸のベクトル
 };
+Sphere sphere = {
+	{ 0.0f, 0.0f, 0.0f }, // 中心点
+	1.0f // 半径
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -58,7 +62,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-		
+		bool isCollision = OBBToSphereIsCollision(obb, sphere);
+		if (isCollision) {
+			color = RED;
+		}
+		else {
+			color = WHITE;
+		}
         
 
         ///
@@ -76,10 +86,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		ImGui::DragFloat3("OBBOrientationX", &obb.orientations[0].x, 0.01f);
 		ImGui::DragFloat3("OBBOrientationY", &obb.orientations[1].x, 0.01f);
 		ImGui::DragFloat3("OBBOrientationZ", &obb.orientations[2].x, 0.01f);
+		ImGui::DragFloat3("SphereCenter", &sphere.center.x, 0.01f);
+		ImGui::DragFloat("SphereRadius", &sphere.radius, 0.01f);
 		ImGui::End();
 		
 		DrawGrid(viewProjectionMatrix, viewportMatrix);
 		DrawOBB(obb, viewProjectionMatrix, viewportMatrix, color);
+		DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, color);
 
         ///
         /// ↑描画処理ここまで

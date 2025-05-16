@@ -325,8 +325,9 @@ bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere);
 bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment);
 Vector3 MultiplyVectorByMatrixTranspose(const Vector3& v, const Vector3 m[3]);
 Vector3 InverseTransformPoint(const Vector3& point, const OBB& obb);
-bool OBBToSphereIsCollision(const OBB& obb, const Sphere sphere);
+
 void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+bool OBBToSphereIsCollision(const OBB& obb, const Sphere& sphere);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

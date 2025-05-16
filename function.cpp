@@ -743,6 +743,8 @@ bool OBBToSphereIsCollision(const OBB& obb, const Sphere& sphere) {
     return distanceSquared <= (sphere.radius * sphere.radius);
 }
 
+
+
 void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
     Vector3 extentX = obb.orientations[0] * obb.size.x;
     Vector3 extentY = obb.orientations[1] * obb.size.y;
@@ -774,5 +776,56 @@ void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix
     DrawSegment({ vertices[2], vertices[6] }, viewProjectionMatrix, viewportMatrix, color);
     DrawSegment({ vertices[3], vertices[7] }, viewProjectionMatrix, viewportMatrix, color);
 }
+Vector3 InverseTransformPoint2(const Vector3& point, const OBB& obb) {
+    Vector3 dir = point - obb.center;
+    return {
+        Dot(dir, obb.orientations[0]),
+        Dot(dir, obb.orientations[1]),
+        Dot(dir, obb.orientations[2])
+    };
+}
+bool IsCollision(const AABB& aabb, const Vector3& start, const Vector3& dir) {
+    float tMin = 0.0f;
+    float tMax = 1.0f;
 
+    for (int i = 0; i < 3; ++i) {
+        float origin = start[i];
+        float direction = dir[i];
+        float minBound = aabb.min[i];
+        float maxBound = aabb.max[i];
+
+        if (std::abs(direction) < 1e-6f) {
+            if (origin < minBound || origin > maxBound) return false;
+        }
+        else {
+            float invDir = 1.0f / direction;
+            float t1 = (minBound - origin) * invDir;
+            float t2 = (maxBound - origin) * invDir;
+
+            if (t1 > t2) std::swap(t1, t2);
+
+            // `std::max(tMin, t1)` を if 文で代替
+            if (t1 > tMin) {
+                tMin = t1;
+            }
+
+            // `std::min(tMax, t2)` を if 文で代替
+            if (t2 < tMax) {
+                tMax = t2;
+            }
+
+            if (tMin > tMax) return false;
+        }
+    }
+    return true;
+}
+bool OBBToSegmentIsCollision(const OBB& obb, const Segment& segment) {
+    Vector3 localStart = InverseTransformPoint2(segment.start, obb);
+    Vector3 localEnd = InverseTransformPoint2(segment.end, obb);
+    Vector3 dir = localEnd - localStart;
+
+    AABB localAABB = { Vector3{ -obb.size.x,obb.size.y,obb.size.z}, obb.size};
+
+    return IsCollision(localAABB, localStart, dir);
+}
 #pragma endregion

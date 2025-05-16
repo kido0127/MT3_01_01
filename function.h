@@ -1,7 +1,12 @@
 ﻿#pragma once
 #include <Novice.h>
 #include <cmath>
-#include <algorithm>
+#define NOMINMAX        
+#include <windows.h>
+#include <algorithm>  
+
+
+
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -25,21 +30,31 @@ struct Vector3 {
         return { x - other.x, y - other.y, z - other.z };
     }
 
-    // スカラー乗算（ベクトル × スカラー）
+    // スカラー乗算
     Vector3 operator*(float scalar) const {
         return { x * scalar, y * scalar, z * scalar };
     }
 
-    // 要素ごとのベクトル同士の掛け算（Hadamard積）
+    // 要素ごとの乗算（Hadamard積）
     Vector3 operator*(const Vector3& other) const {
         return { x * other.x, y * other.y, z * other.z };
     }
+
     // スカラー除算
     Vector3 operator/(float scalar) const {
         return { x / scalar, y / scalar, z / scalar };
     }
 
+    // 添え字アクセス
+    float& operator[](int i) {
+        return i == 0 ? x : (i == 1 ? y : z);
+    }
+
+    const float& operator[](int i) const {
+        return i == 0 ? x : (i == 1 ? y : z);
+    }
 };
+
 
 struct Vector4 {
     float x, y, z, w;
@@ -92,7 +107,7 @@ struct OBB {
 	Vector3 center; // 中心点
 	Vector3 size; // 半径
 	Vector3 orientations[3]; // 各軸のベクトル
-   
+	Matrix4x4 rotation; // 回転行列
 };
 #pragma endregion
 #pragma region 定数
@@ -328,6 +343,11 @@ Vector3 InverseTransformPoint(const Vector3& point, const OBB& obb);
 
 void DrawOBB(const OBB& obb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 bool OBBToSphereIsCollision(const OBB& obb, const Sphere& sphere);
+bool OBBToSegmentIsCollision(const OBB& obb, const Segment& segment);
+
+Vector3 InverseTransformPoint(const Vector3& point, const OBB& obb);
+bool IsCollision(const AABB& aabb, const Vector3& start, const Vector3& dir);
+bool OBBToSegmentIsCollision(const OBB& obb, const Segment& segment);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

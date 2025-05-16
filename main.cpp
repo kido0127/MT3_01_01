@@ -2,7 +2,8 @@
 #include "function.h"
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
-
+AABB aabb = { { -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f } };
+Segment segment = { { -2.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f } };
 
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -54,7 +55,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-		
+		bool isCollision = AABBToSegmentIsCollision(aabb, segment);
+		if (isCollision) {
+			color = RED;
+		}
+		else {
+			color = WHITE;
+		}
         
 
         ///
@@ -67,8 +74,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ImGui::Begin("Window");
         ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
         ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("AABBMin", &aabb.min.x, 0.01f);
+		ImGui::DragFloat3("AABBMax", &aabb.max.x, 0.01f);
+		ImGui::DragFloat3("SegmentStart", &segment.start.x, 0.01f);
+		ImGui::DragFloat3("SegmentEnd", &segment.end.x, 0.01f);
 		ImGui::End();
-		
+		DrawGrid(viewProjectionMatrix, viewportMatrix);
+		DrawAABB(aabb, viewProjectionMatrix, viewportMatrix, color);
+		DrawSegment(segment, viewProjectionMatrix, viewportMatrix, color);
 
 
         ///

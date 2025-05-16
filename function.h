@@ -14,21 +14,33 @@
 /// </summary>
 struct Vector3 {
     float x, y, z;
-    // マイナス演算子（減算）
-    Vector3 operator-(const Vector3& other) const {
-        return { x - other.x, y - other.y, z - other.z };
-    }
 
-    // 加算演算子（必要であれば）
+    // 加算
     Vector3 operator+(const Vector3& other) const {
         return { x + other.x, y + other.y, z + other.z };
     }
 
-    // スカラー乗算（float × Vector3）
+    // 減算
+    Vector3 operator-(const Vector3& other) const {
+        return { x - other.x, y - other.y, z - other.z };
+    }
+
+    // スカラー乗算（ベクトル × スカラー）
     Vector3 operator*(float scalar) const {
         return { x * scalar, y * scalar, z * scalar };
     }
+
+    // 要素ごとのベクトル同士の掛け算（Hadamard積）
+    Vector3 operator*(const Vector3& other) const {
+        return { x * other.x, y * other.y, z * other.z };
+    }
+    // スカラー除算
+    Vector3 operator/(float scalar) const {
+        return { x / scalar, y / scalar, z / scalar };
+    }
+
 };
+
 struct Vector4 {
     float x, y, z, w;
 };;
@@ -299,7 +311,7 @@ bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere);
 
-
+bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

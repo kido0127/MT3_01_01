@@ -683,4 +683,36 @@ bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere) {
 	// 衝突判定
 	return distanceSquared <= radiusSquared;
 }
+bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment) {
+    Vector3 dir = segment.end - segment.start;
+    Vector3 invDir = {
+        1.0f / (dir.x != 0.0f ? dir.x : 0.00001f),
+        1.0f / (dir.y != 0.0f ? dir.y : 0.00001f),
+        1.0f / (dir.z != 0.0f ? dir.z : 0.00001f)
+    };
+
+    Vector3 t1 = (aabb.min - segment.start) * invDir;
+    Vector3 t2 = (aabb.max - segment.start) * invDir;
+
+    Vector3 tMin = {
+        std::fmin(t1.x, t2.x),
+        std::fmin(t1.y, t2.y),
+        std::fmin(t1.z, t2.z),
+    };
+    Vector3 tMax = {
+        std::fmax(t1.x, t2.x),
+        std::fmax(t1.y, t2.y),
+        std::fmax(t1.z, t2.z),
+    };
+
+    float tNear = std::fmax(std::fmax(tMin.x, tMin.y), tMin.z);
+    float tFar = std::fmin(std::fmin(tMax.x, tMax.y), tMax.z);
+
+    // 交差していない
+    if (tNear > tFar || tFar < 0.0f || tNear > 1.0f) {
+        return false;
+    }
+    return true;
+}
+
 #pragma endregion

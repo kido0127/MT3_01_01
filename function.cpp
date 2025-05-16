@@ -714,5 +714,70 @@ bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment) {
     }
     return true;
 }
+//二次ベジエ曲線を描く
+Vector3 CubicBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t) {
+    float u = 1.0f - t;
+    float tt = t * t;
+    float uu = u * u;
+    float uuu = uu * u;
+    float ttt = tt * t;
+
+    Vector3 result = p0 * uuu;                 // (1-t)^3 * p0
+    result = result + p1 * 3.0f * uu * t;      // + 3*(1-t)^2*t * p1
+    result = result + p2 * 3.0f * u * tt;      // + 3*(1-t)*t^2 * p2
+    result = result + p3 * ttt;                // + t^3 * p3
+
+    return result;
+}
+// 3点制御の二次ベジェ曲線
+void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2,
+    float step, uint32_t color,
+    const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix) {
+    for (float t = 0.0f; t < 1.0f; t += step) {
+        float u = 1.0f - t;
+        Vector3 a = {
+            u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+            u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+            u * u * p0.z + 2 * u * t * p1.z + t * t * p2.z
+        };
+
+        float nextT = t + step;
+        u = 1.0f - nextT;
+        Vector3 b = {
+            u * u * p0.x + 2 * u * nextT * p1.x + nextT * nextT * p2.x,
+            u * u * p0.y + 2 * u * nextT * p1.y + nextT * nextT * p2.y,
+            u * u * p0.z + 2 * u * nextT * p1.z + nextT * nextT * p2.z
+        };
+
+        // スクリーン座標に変換
+        Vector3 aScreen = Transform(Transform(a, viewProjectionMatrix), viewportMatrix);
+        Vector3 bScreen = Transform(Transform(b, viewProjectionMatrix), viewportMatrix);
+
+        Novice::DrawLine((int)aScreen.x, (int)aScreen.y, (int)bScreen.x, (int)bScreen.y, color);
+    }
+}
+// Vector3にMatrix4x4を適用して変換する関数
+Vector3 Transform(const Vector3& v, const Matrix4x4& m) {
+    Vector3 result{};
+    float w =
+        v.x * m.m[0][3] +
+        v.y * m.m[1][3] +
+        v.z * m.m[2][3] +
+        m.m[3][3];
+
+    if (w == 0.0f) {
+        w = 1.0f; // ゼロ除算防止
+    }
+
+    result.x =
+        (v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0]) / w;
+    result.y =
+        (v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1]) / w;
+    result.z =
+        (v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2]) / w;
+
+    return result;
+}
+
 
 #pragma endregion

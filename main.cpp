@@ -3,7 +3,11 @@
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
 
-
+Vector3 controlPoint[3] = {
+	{ -0.8f, 0.58f, 1.0f },
+	{ 1.76f, 1.0f, -0.3f },
+	{ 0.94f, -0.7f, 2.3f }
+};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -67,8 +71,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ImGui::Begin("Window");
         ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
         ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+		ImGui::DragFloat3("controlPoint[0]", &controlPoint[0].x, 0.01f);
+		ImGui::DragFloat3("controlPoint[1]", &controlPoint[1].x, 0.01f);
+		ImGui::DragFloat3("controlPoint[2]", &controlPoint[2].x, 0.01f);
 		ImGui::End();
-		
+		// グリッドを描画
+		DrawGrid(viewProjectionMatrix, viewportMatrix);
+        DrawBezier(controlPoint[0], controlPoint[1], controlPoint[2], 0.01f, color, viewProjectionMatrix, viewportMatrix);
+
+        // コントロールポイントに黒い球を描画
+        for (int i = 0; i < 3; i++) {
+            Vector3 ndc = Transform(controlPoint[i], viewProjectionMatrix); // NDC座標に変換
+            Vector3 screen = Transform(ndc, viewportMatrix); // スクリーン座標に変換
+            Novice::DrawEllipse(
+                static_cast<int>(screen.x),
+                static_cast<int>(screen.y),
+                8, 8, 0.0f, 0x000000FF, kFillModeSolid // 半径8の黒い塗りつぶし円
+            );
+        }
+
 
 
         ///

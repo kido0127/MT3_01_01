@@ -311,7 +311,11 @@ bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere);
 
-bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment)
+bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment);
+Vector3 CubicBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, const Vector3& p3, float t);
+void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, float step, uint32_t color, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+
+Vector3 Transform(const Vector3& v, const Matrix4x4& m);
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

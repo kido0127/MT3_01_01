@@ -453,6 +453,15 @@ bool CheckSphereToSphereCollision(const Sphere& sphere1, const Sphere& sphere2)
 
 }
 
+/// <summary>
+/// 平面と球の衝突判定を行う
+/// </summary>
+/// <param name="sphere"></param>
+/// <param name="A">平面の任意の点A</param>
+/// <param name="B">平面の任意の点B</param>
+/// <param name="C">平面の任意の点C</param>
+/// /// <param name="任意の点について">関数MakePositionFromPlaneで計算可能</param>
+/// <returns></returns>
 bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const Vector3& B, const Vector3& C) {
     // 平面の法線を求める
     Vector3 normal = Normalize(Cross(Subtract(B, A), Subtract(C, B)));
@@ -473,7 +482,14 @@ bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const V
 }
 
 
-
+/// <summary>
+/// 平面を描画する
+/// </summary>
+/// <param name="plane"></param>
+/// <param name="viewProjectionMatrix"></param>
+/// <param name="viewportMatrix"></param>
+/// <param name="color"></param>
+/// <param name="size"></param>
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size) {//size = 2.0f
     // 平面の中心点
     Vector3 center = Multiply(plane.distance, plane.normal);
@@ -504,10 +520,22 @@ void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const 
             static_cast<int>(points[next].x), static_cast<int>(points[next].y), color);
     }
 }
+/// <summary>
+/// ベクトルとスカラーの積を計算する
+/// </summary>
+/// <param name="v"></param>
+/// <param name="scalar"></param>
+/// <returns></returns>
 Vector3 Vector3ToScalarMultiply(const Vector3& v, float scalar) {
 	return { v.x * scalar, v.y * scalar, v.z * scalar };
 }
-// Planeから、平面上の3点（A, B, C）を求める
+/// <summary>
+/// 平面の任意の三点を求める
+/// </summary>
+/// <param name="plane"></param>
+/// <param name="outA"></param>
+/// <param name="outB"></param>
+/// <param name="outC"></param>
 void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vector3* outC) {
     // 平面上の任意の1点（原点からdistance分法線の逆方向へ進んだ点）
     Vector3 A = Vector3ToScalarMultiply(plane.normal, plane.distance); // plane.normal * distance

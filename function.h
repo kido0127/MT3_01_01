@@ -13,6 +13,20 @@
 /// </summary>
 struct Vector3 {
     float x, y, z;
+    // マイナス演算子（減算）
+    Vector3 operator-(const Vector3& other) const {
+        return { x - other.x, y - other.y, z - other.z };
+    }
+
+    // 加算演算子（必要であれば）
+    Vector3 operator+(const Vector3& other) const {
+        return { x + other.x, y + other.y, z + other.z };
+    }
+
+    // スカラー乗算（float × Vector3）
+    Vector3 operator*(float scalar) const {
+        return { x * scalar, y * scalar, z * scalar };
+    }
 };
 struct Vector4 {
     float x, y, z, w;
@@ -43,12 +57,13 @@ struct Plane {
     float distance;
     Vector3 A, B, C;
 };
-
-
-
 #pragma endregion
-
-
+#pragma region Triangle（三角形関係）
+struct Triangle {
+    Vector3 vertices[3];
+    float Line;
+    float Ray;
+};
 #pragma endregion
 #pragma region 定数
 // 横幅
@@ -269,6 +284,9 @@ Vector3 Vector3ToScalarMultiply(const Vector3& v, float scalar);
 void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vector3* outC);
 bool CheckSegmentToPlaneCollision(const Segment& segment, const Plane& plane);
 void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+bool TriangleToSegmentIsCollision(const Triangle& triangle, const Segment& segment);
+void DrawTriangle(const Triangle& triangle, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
 
 #pragma endregion

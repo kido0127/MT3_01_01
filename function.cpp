@@ -7,7 +7,7 @@
 /// <param name="y">表示位置のY座標</param>
 /// <param name="vector">表示するベクトル</param>
 /// <param name="label">ラベル文字列</param>
-void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label) {
+void VectorScreenPrintf(int x, int y, const Vector3 & vector, const char* label) {
     Novice::ScreenPrintf(x, y, "%0.2f", vector.x);
     Novice::ScreenPrintf(x + kColuwidth, y, "%0.2f", vector.y);
     Novice::ScreenPrintf(x + kColuwidth * 2, y, "%0.2f", vector.z);
@@ -428,11 +428,12 @@ void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, con
         }
     }
 }
+
 /// <summary>
 /// 球体同士の衝突判定を行う
 /// 球体の中心間の距離が、半径の和よりも小さい場合、衝突しているとみなす
 /// </summary>
-/// <param name="sphere1"></param>
+/// <param name="spheare1"></param>
 /// <param name="sphere2"></param>
 bool CheckSphereCollision(const Sphere& sphere1, const Sphere& sphere2)
 {
@@ -490,7 +491,7 @@ bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const V
 /// <param name="viewportMatrix"></param>
 /// <param name="color"></param>
 /// <param name="size"></param>
-void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size) {//size = 2.0f
+void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size) {//size = 1.0f
     // 平面の中心点
     Vector3 center = Multiply(plane.distance, plane.normal);
 
@@ -555,5 +556,28 @@ void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vecto
     *outB = Add(A, tangent);   // A点からtangent方向に1進んだ点
     *outC = Add(A, bitangent); // A点からbitangent方向に1進んだ点
 }
-
+bool CheckSegmentToPlaneCollision(const Segment& segment, const Plane& plane) {
+    // 平面の法線を求める
+    Vector3 normal = Normalize(plane.normal);
+    // 平面の方程式の D を求める
+    float D = -plane.distance;
+    // 線分の始点と終点を平面の方程式に代入して距離を計算
+    float distanceStart = Dot(normal, segment.start) + D;
+    float distanceEnd = Dot(normal, segment.end) + D;
+    // 衝突判定 (距離が0以下なら衝突)
+    if (distanceStart * distanceEnd <= 0.0f) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color) {
+    // スクリーン座標系まで変換
+    Vector3 screenStart = TransformToScreen(segment.start, viewProjectionMatrix, viewportMatrix);
+    Vector3 screenEnd = TransformToScreen(segment.end, viewProjectionMatrix, viewportMatrix);
+    // 変換した座標を使って表示
+    Novice::DrawLine(static_cast<int>(screenStart.x), static_cast<int>(screenStart.y),
+        static_cast<int>(screenEnd.x), static_cast<int>(screenEnd.y), color);
+}
 #pragma endregion

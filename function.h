@@ -14,7 +14,9 @@
 struct Vector3 {
     float x, y, z;
 };
-
+struct Vector4 {
+    float x, y, z, w;
+};;
 /// <summary>
 /// 4x4行列を表す構造体
 /// </summary>
@@ -41,6 +43,7 @@ struct Plane {
     float distance;
     Vector3 A, B, C;
 };
+
 
 
 #pragma endregion
@@ -258,14 +261,14 @@ Vector3 Project(const Vector3& v1, const Vector3& v2);
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 void DrawSphere(const  Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
-bool CheckSphereToSphereCollision(const Sphere& sphere1, const Sphere& sphere2);
+//bool CheckSphereToSphereCollision(const Sphere& sphere1, const Sphere& sphere2);
 bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const Vector3& B, const Vector3& C);
 
 void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size);
 Vector3 Vector3ToScalarMultiply(const Vector3& v, float scalar);
 void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vector3* outC);
-
-
+bool CheckSegmentToPlaneCollision(const Segment& segment, const Plane& plane);
+void DrawSegment(const Segment& segment, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 
 
 #pragma endregion

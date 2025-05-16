@@ -657,6 +657,7 @@ void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Mat
     }
 
     // 12本のエッジを正しい順番で描画
+
     int edgeIndices[12][2] = {
         {0, 1}, {1, 3}, {3, 2}, {2, 0}, // 底面
         {4, 5}, {5, 7}, {7, 6}, {6, 4}, // 上面

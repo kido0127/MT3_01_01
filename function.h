@@ -378,6 +378,7 @@ void DrawNodeLine(const Node& parent, const Node& child, const Matrix4x4& viewPr
 Vector3 GetTranslateFromMatrix(const Matrix4x4& m);
 
 void ResetSimulation(Spring& spring, Ball& ball, Segment& segment, Sphere& sphere);
+void UpdateSphereTocircleMove(Sphere& sphere, float time, float radius);
 
 
 #pragma endregion

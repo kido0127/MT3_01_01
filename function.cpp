@@ -824,4 +824,10 @@ void ResetSimulation(Spring& spring, Ball& ball, Segment& segment, Sphere& spher
     sphere.radius = ball.radius;
 }
 
+
+void UpdateSphereTocircleMove(Sphere& sphere, float time,float radius) {
+    sphere.center.x = radius * std::cos(float(M_PI) * time);
+    sphere.center.y = radius * std::sin(float(M_PI) * time);
+    sphere.center.z = 0.0f;
+}
 #pragma endregion

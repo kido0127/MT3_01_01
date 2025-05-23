@@ -803,5 +803,25 @@ Vector3 GetTranslateFromMatrix(const Matrix4x4& m) {
     return { m.m[3][0], m.m[3][1], m.m[3][2] };
 }
 
+// 04_00の課題用
+void ResetSimulation(Spring& spring, Ball& ball, Segment& segment, Sphere& sphere) {
+    spring.anchor = { 0.0f, 0.0f, 0.0f };
+    spring.naturalLength = 1.0f;
+    spring.stiffness = 100.0f;
+    spring.dampingCoefficient = 2.0f;
+
+    ball.position = { 1.2f, 0.0f, 0.0f };
+    ball.mass = 2.0f;
+    ball.radius = 0.05f;
+    ball.color = BLUE;
+    ball.velocity = { 0.0f, 0.0f, 0.0f };
+    ball.acceleration = { 0.0f, 0.0f, 0.0f };
+
+    segment.start = spring.anchor;
+    segment.end = ball.position;
+
+    sphere.center = ball.position;
+    sphere.radius = ball.radius;
+}
 
 #pragma endregion

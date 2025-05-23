@@ -110,6 +110,7 @@ struct Spring {
     Vector3 anchor;
     float naturalLength;//自然長
     float stiffness;//剛性。ばね定数ｋ
+    float dampingCoefficient;//減衰係数
 };
 #pragma endregion
 #pragma region Ball(ボール)
@@ -376,6 +377,7 @@ void UpdateNodeMatrix(Node& node);
 void DrawNodeLine(const Node& parent, const Node& child, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 Vector3 GetTranslateFromMatrix(const Matrix4x4& m);
 
+void ResetSimulation(Spring& spring, Ball& ball, Segment& segment, Sphere& sphere);
 
 
 #pragma endregion

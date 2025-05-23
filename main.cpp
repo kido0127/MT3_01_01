@@ -21,6 +21,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     spring.anchor = { 0.0f,0.0f,0.0f };
     spring.naturalLength = 1.0f;
     spring.stiffness = 100.0f;
+    spring.dampingCoefficient = 2.0f;
     
     ball.position = { 1.2f,0.0f,0.0f };
     ball.mass = 2.0f;
@@ -36,6 +37,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     sphere.center = ball.position;
     sphere.radius = ball.radius;
+
 
     // キー入力結果を受け取る箱
     char keys[256] = { 0 };
@@ -84,7 +86,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             Vector3 restPosition = spring.anchor + direction * spring.naturalLength;
             Vector3 displacement = ball.position - restPosition;
             Vector3 restoringForce = -spring.stiffness * displacement;
-            Vector3 force = restoringForce;
+            Vector3 dampingForce = -spring.dampingCoefficient * ball.velocity;
+            Vector3 force = restoringForce + dampingForce;;
             ball.acceleration = force / ball.mass;
         }
         ball.velocity += ball.acceleration * deltaTime;
@@ -103,8 +106,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         /// ↓描画処理ここから
         ///
         ImGui::Begin("Window");
-        ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
-        ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+       // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+       // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+        if (ImGui::Button("Start")) {
+            ResetSimulation(spring, ball, segment, sphere);
+       }
 		ImGui::End();
         DrawGrid(viewProjectionMatrix, viewportMatrix);
         DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);

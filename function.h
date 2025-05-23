@@ -311,7 +311,13 @@ bool AABBTOAABBIsCollision(const AABB& aabb1, const AABB& aabb2);
 void DrawAABB(const AABB& aabb, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
 bool AABBToSphereIsCollision(const AABB& aabb, const Sphere& sphere);
 
-bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment)
+bool AABBToSegmentIsCollision(const AABB& aabb, const Segment& segment);
+void UpdateNodeMatrix(Node& node);
+void DrawNodeLine(const Node& parent, const Node& child, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+Vector3 GetTranslateFromMatrix(const Matrix4x4& m);
+
+
+
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

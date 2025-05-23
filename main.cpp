@@ -98,6 +98,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         // フレームの終了
         Novice::EndFrame();
 
+
         // ESCキーが押されたらループを抜ける
         if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
             break;

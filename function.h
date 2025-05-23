@@ -38,6 +38,9 @@ struct Vector3 {
     Vector3 operator/(float scalar) const {
         return { x / scalar, y / scalar, z / scalar };
     }
+
+
+
     //複合代入演算子
     //複合代入演算子はメンバ関数としておなじVector3の中で定義しないといけない
     Vector3& operator*=(float s) { x *= s; y *= s; z *= s; return *this; }
@@ -100,6 +103,25 @@ struct Node {
     Matrix4x4 worldMatrix;
     Node* parent = nullptr;
 };
+#pragma endregion
+#pragma region Spring (ばね)
+struct Spring {
+    //アンカー。固定された橋の位置
+    Vector3 anchor;
+    float naturalLength;//自然長
+    float stiffness;//剛性。ばね定数ｋ
+};
+#pragma endregion
+#pragma region Ball(ボール)
+struct Ball {
+    Vector3 position;//ボールの位置
+    Vector3 velocity;//ボールの速度
+    Vector3 acceleration;//ボールの加速度
+    float mass;//ボールの質量
+    float radius;//ボールの半径
+    unsigned int color;//ボールの色
+};
+
 #pragma endregion
 #pragma region 定数
 // 横幅
@@ -218,7 +240,9 @@ inline Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Mu
 //単項演算子
 inline Vector3 operator-(const Vector3& v) { return{ -v.x,-v.y,-v.z }; };
 inline Vector3 operator+(const Vector3& v) { return v; };
-
+inline Vector3 operator*(float scalar, const Vector3& v) {
+    return { v.x * scalar, v.y * scalar, v.z * scalar };
+}
 #pragma endregion
 
 

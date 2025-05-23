@@ -2,6 +2,11 @@
 #include "function.h"
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
+Spring spring;
+Ball ball;
+
+Segment segment;
+Sphere sphere;
 
 
 
@@ -13,6 +18,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Vector3 cameraTranslate = { 0.0f, 1.9f, -6.49f };
     Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
   // uint32_t color = WHITE;
+    spring.anchor = { 0.0f,0.0f,0.0f };
+    spring.naturalLength = 1.0f;
+    spring.stiffness = 100.0f;
+    
+    ball.position = { 1.2f,0.0f,0.0f };
+    ball.mass = 2.0f;
+    ball.radius = 0.05f;
+    ball.color = BLUE;
+
+    Vector3 diff = ball.position - spring.anchor;
+    float length = Length(diff);
+    float deltaTime = 1.0f / 60.0f;
+
+    segment.start = spring.anchor;
+    segment.end = ball.position;
+
+    sphere.center = ball.position;
+    sphere.radius = ball.radius;
 
     // キー入力結果を受け取る箱
     char keys[256] = { 0 };
@@ -54,9 +77,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-		
-        
+        diff = ball.position - spring.anchor;
+        length = Length(diff);
+        if (length != 0.0f) {
+            Vector3 direction = Normalize(diff);
+            Vector3 restPosition = spring.anchor + direction * spring.naturalLength;
+            Vector3 displacement = ball.position - restPosition;
+            Vector3 restoringForce = -spring.stiffness * displacement;
+            Vector3 force = restoringForce;
+            ball.acceleration = force / ball.mass;
+        }
+        ball.velocity += ball.acceleration * deltaTime;
+        ball.position += ball.velocity * deltaTime;
 
+        segment.start = spring.anchor;
+        segment.end = ball.position;
+
+        sphere.center = ball.position;
+        sphere.radius = ball.radius;
         ///
         /// ↑更新処理ここまで
         ///
@@ -68,7 +106,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
         ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
 		ImGui::End();
-		
+        DrawGrid(viewProjectionMatrix, viewportMatrix);
+        DrawSegment(segment, viewProjectionMatrix, viewportMatrix, WHITE);
+        DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, ball.color);
 
 
         ///

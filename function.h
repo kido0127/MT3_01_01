@@ -38,6 +38,12 @@ struct Vector3 {
     Vector3 operator/(float scalar) const {
         return { x / scalar, y / scalar, z / scalar };
     }
+    //複合代入演算子
+    //複合代入演算子はメンバ関数としておなじVector3の中で定義しないといけない
+    Vector3& operator*=(float s) { x *= s; y *= s; z *= s; return *this; }
+    Vector3& operator-=(const Vector3& v) { x -= v.x; y -= v.y; z -= v.z; return *this; }
+    Vector3& operator+=(const Vector3& v) { x += v.x; y += v.y; z += v.z; return *this; }
+    Vector3& operator/=(float s) { x /= s; y /= s; z /= s; return *this; }
 
 };
 
@@ -128,7 +134,7 @@ void VectorScreenPrintf(int x, int y, const Vector3& vector, const char* label);
 /// <param name="matrix">表示したい変数名</param>
 /// <param name="label">表示したい変数の名前（英語のみ可）</param>
 void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label);
-
+#pragma region 基本の計算
 /// <summary>
 /// Vector型の加算
 /// </summary>
@@ -198,6 +204,25 @@ Matrix4x4 Subtract(const Matrix4x4& m1, const Matrix4x4& m2);
 /// <param name="m2">変数2</param>
 /// <returns>乗算結果のMatrix4x4</returns>
 Matrix4x4 Multiply(const Matrix4x4& m1, const Matrix4x4& m2);
+#pragma endregion
+#pragma region 二項演算子と単項演算子
+//二項演算子
+//Vector3 operator+(const Vector3& v1, const Vector3& v2) { return Add(v1, v2); };
+//Vector3 operator-(const Vector3& v1, const Vector3& v2) { return Subtract(v1, v2); };
+//Vector3 operator* (float s, const Vector3& v) { return Multiply(s, v); };
+//Vector3 operator*(const Vector3 v, float s) { return s * v; };
+//Vector3 operator/(const Vector3& v, float s) { return Multiply(1.0f / s, v); };
+inline Matrix4x4 operator+(const Matrix4x4& m1, const Matrix4x4& m2) { return Add(m1, m2); };
+inline Matrix4x4 operator-(const Matrix4x4& m1, const Matrix4x4& m2) { return Subtract(m1, m2); };
+inline Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return Multiply(m1, m2); };
+//単項演算子
+inline Vector3 operator-(const Vector3& v) { return{ -v.x,-v.y,-v.z }; };
+inline Vector3 operator+(const Vector3& v) { return v; };
+
+#pragma endregion
+
+
+
 
 /// <summary>
 /// 平行移動行列を作成
@@ -330,6 +355,7 @@ Vector3 GetTranslateFromMatrix(const Matrix4x4& m);
 
 
 #pragma endregion
+
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示
 // 27行目: MatrixScreenPrintf: Matrix座標の表示

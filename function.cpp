@@ -729,6 +729,28 @@ Vector3 CubicBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, con
 
     return result;
 }
+// Vector3にMatrix4x4を適用して変換する関数
+Vector3 Transform(const Vector3& v, const Matrix4x4& m) {
+    Vector3 result{};
+    float w =
+        v.x * m.m[0][3] +
+        v.y * m.m[1][3] +
+        v.z * m.m[2][3] +
+        m.m[3][3];
+
+    if (w == 0.0f) {
+        w = 1.0f; // ゼロ除算防止
+    }
+
+    result.x =
+        (v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0]) / w;
+    result.y =
+        (v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1]) / w;
+    result.z =
+        (v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2]) / w;
+
+    return result;
+}
 // 3点制御の二次ベジェ曲線
 void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2,
     float step, uint32_t color,
@@ -756,28 +778,7 @@ void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2,
         Novice::DrawLine((int)aScreen.x, (int)aScreen.y, (int)bScreen.x, (int)bScreen.y, color);
     }
 }
-// Vector3にMatrix4x4を適用して変換する関数
-Vector3 Transform(const Vector3& v, const Matrix4x4& m) {
-    Vector3 result{};
-    float w =
-        v.x * m.m[0][3] +
-        v.y * m.m[1][3] +
-        v.z * m.m[2][3] +
-        m.m[3][3];
 
-    if (w == 0.0f) {
-        w = 1.0f; // ゼロ除算防止
-    }
-
-    result.x =
-        (v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0] + m.m[3][0]) / w;
-    result.y =
-        (v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1] + m.m[3][1]) / w;
-    result.z =
-        (v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] + m.m[3][2]) / w;
-
-    return result;
-}
 void UpdateNodeMatrix(Node& node) {
     node.localMatrix = MakeAffineMatrix(node.scale, node.rotate, node.translate);
     if (node.parent) {

@@ -84,6 +84,17 @@ struct AABB {
 	Vector3 max; // 最大点
 };
 #pragma endregion
+#pragma region 階層構造
+struct Node {
+    Vector3 scale;
+    Vector3 rotate;
+    Vector3 translate;
+
+    Matrix4x4 localMatrix;
+    Matrix4x4 worldMatrix;
+    Node* parent = nullptr;
+};
+#pragma endregion
 #pragma region 定数
 // 横幅
 static const int kColuwidth = 60;

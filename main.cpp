@@ -12,7 +12,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
     Vector3 cameraTranslate = { 0.0f, 1.9f, -6.49f };
     Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
-    uint32_t color = WHITE;
+  // uint32_t color = WHITE;
 
     // キー入力結果を受け取る箱
     char keys[256] = { 0 };

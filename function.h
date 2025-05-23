@@ -84,6 +84,17 @@ struct AABB {
 	Vector3 max; // 最大点
 };
 #pragma endregion
+#pragma region 階層構造
+struct Node {
+    Vector3 scale;
+    Vector3 rotate;
+    Vector3 translate;
+
+    Matrix4x4 localMatrix;
+    Matrix4x4 worldMatrix;
+    Node* parent = nullptr;
+};
+#pragma endregion
 #pragma region 定数
 // 横幅
 static const int kColuwidth = 60;
@@ -100,6 +111,8 @@ const int kWindowHeight = 720;
 
 #pragma endregion
 #pragma region 関数宣言 
+
+#pragma region 基本の計算
 /// <summary>
 /// VectorScreenPrintf: Vector座標の表示
 /// </summary>
@@ -282,7 +295,7 @@ Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, f
 /// <param name="matrix">変換行列</param>
 /// <returns>変換後のベクトル</returns>
 Vector3 TransformVector(const Vector3& vector, const Matrix4x4& matrix);
-
+#pragma endregion
 /// <summary>
 /// クロス積を計算
 /// </summary>
@@ -316,6 +329,13 @@ Vector3 CubicBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, con
 void DrawBezier(const Vector3& p0, const Vector3& p1, const Vector3& p2, float step, uint32_t color, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
 
 Vector3 Transform(const Vector3& v, const Matrix4x4& m);
+
+void UpdateNodeMatrix(Node& node);
+void DrawNodeLine(const Node& parent, const Node& child, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+Vector3 GetTranslateFromMatrix(const Matrix4x4& m);
+
+
+
 #pragma endregion
 #pragma region 関数位置リスト
 // 20行目: VectorScreenPrintf: Vector座標の表示

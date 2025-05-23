@@ -778,6 +778,29 @@ Vector3 Transform(const Vector3& v, const Matrix4x4& m) {
 
     return result;
 }
+void UpdateNodeMatrix(Node& node) {
+    node.localMatrix = MakeAffineMatrix(node.scale, node.rotate, node.translate);
+    if (node.parent) {
+        node.worldMatrix = Multiply(node.localMatrix, node.parent->worldMatrix);
+    }
+    else {
+        node.worldMatrix = node.localMatrix;
+    }
+}
+
+void DrawNodeLine(const Node& parent, const Node& child,const Matrix4x4& viewProjectionMatrix,const Matrix4x4& viewportMatrix,uint32_t color) {
+    Segment segment;
+    segment.start = GetTranslateFromMatrix(parent.worldMatrix);
+    segment.end = GetTranslateFromMatrix(child.worldMatrix);
+
+    DrawSegment(segment, viewProjectionMatrix, viewportMatrix, color);
+}
+
+
+
+Vector3 GetTranslateFromMatrix(const Matrix4x4& m) {
+    return { m.m[3][0], m.m[3][1], m.m[3][2] };
+}
 
 
 #pragma endregion

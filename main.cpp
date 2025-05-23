@@ -12,7 +12,7 @@ Vector3 rotate{ 0.4f,1.43f,-0.8f };
 Matrix4x4 rotateXMatrix = MakeRotateXMatrix(rotate.x);
 Matrix4x4 rotateYMatrix = MakeRotateYMatrix(rotate.y);
 Matrix4x4 rotateZMatrix = MakeRotateZMatrix(rotate.z);
-Matrix4x4 rotateXYZMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+Matrix4x4 rotateXYZMatrix = MakeRotateXYZMatrix(rotate);
 
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -81,13 +81,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ImGui::Text("c:%f,%f,%f", c.x, c.y, c.z);
         ImGui::Text("d:%f,%f,%f", d.x, d.y, d.z);
         ImGui::Text("e:%f,%f,%f", e.x, e.y, e.z);
-        ImGui::Text("matrix:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
-            rotateXMatrix.m[0][0], rotateXMatrix.m[0][1], rotateXMatrix.m[0][2],
-            rotateXMatrix.m[0][3], rotateXMatrix.m[1][0], rotateXMatrix.m[1][1],
-            rotateXMatrix.m[1][2], rotateXMatrix.m[1][3], rotateXMatrix.m[2][0],
-            rotateXMatrix.m[2][1], rotateXMatrix.m[2][2], rotateXMatrix.m[2][3],
-            rotateXMatrix.m[3][0], rotateXMatrix.m[3][1], rotateXMatrix.m[3][2],
-            rotateXMatrix.m[3][3]);
+        ImGui::Text("matrix:\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n%f,%f,%f,%f\n",
+            rotateXYZMatrix.m[0][0], rotateXYZMatrix.m[0][1], rotateXYZMatrix.m[0][2], rotateXYZMatrix.m[0][3],
+            rotateXYZMatrix.m[1][0], rotateXYZMatrix.m[1][1], rotateXYZMatrix.m[1][2], rotateXYZMatrix.m[1][3],
+            rotateXYZMatrix.m[2][0], rotateXYZMatrix.m[2][1], rotateXYZMatrix.m[2][2], rotateXYZMatrix.m[2][3],
+            rotateXYZMatrix.m[3][0], rotateXYZMatrix.m[3][1], rotateXYZMatrix.m[3][2], rotateXYZMatrix.m[3][3]);
+
 		ImGui::End();
 		
 

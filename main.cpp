@@ -3,7 +3,7 @@
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
 
-ConicalPendulum conicalPendulum;
+Pendulum pendulum;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -12,19 +12,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Novice::Initialize(kWindowTitle, kWindowWidth, kWindowHeight);
     Vector3 cameraTranslate = { 0.0f, 1.9f, -6.49f };
     Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
-  // uint32_t color = WHITE;
-   // 変数定義
-    conicalPendulum.anchor = { 0.0f,1.0f,0.0f };
-    conicalPendulum.length = 0.8f;
-    conicalPendulum.halfApexAngle = 0.7f;
-    conicalPendulum.angle = 0.7f;
-    conicalPendulum.angularVelocity = 0.0f;
-   
-    Vector3 pos = GetConicalPendulumPosition(conicalPendulum);
-   float elaspedTime = 0.0f;
-   
+    // uint32_t color = WHITE;
+     // 変数定義
+    pendulum.anchor = { 0.0f,1.0f,0.0f };
+    pendulum.length = 0.8f;
+    pendulum.angle = 0.7f;
+    pendulum.angularVelocity = 0.0f;
+    pendulum.angularAcceleration = 0.0f;
 
-  
+    Vector3 pos = GetPendulumPosition(pendulum);
+    float elaspedTime = 0.0f;
+
+
+
     // キー入力結果を受け取る箱
     char keys[256] = { 0 };
     char preKeys[256] = { 0 };
@@ -65,27 +65,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-        UpdateConicalPendulum(conicalPendulum, deltaTime);
+        UpdatePendulum(pendulum, deltaTime);
         elaspedTime += deltaTime;
         ///
         /// ↑更新処理ここまで
         ///
-        pos = GetConicalPendulumPosition(conicalPendulum);
+        pos = GetPendulumPosition(pendulum);
         ///
         /// ↓描画処理ここから
         ///
         ImGui::Begin("Window");
-       // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
-       // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+        // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+        // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
         if (ImGui::Button("Start")) {
-            ResetConicalPendulum(conicalPendulum, { 0.0f,1.0f,0.0f }, conicalPendulum.length, conicalPendulum.halfApexAngle, 0.0f);
-
-       }
-        ImGui::DragFloat("Length", &conicalPendulum.length, 0.01f);
-        ImGui::DragFloat("HalfApexAngle", &conicalPendulum.halfApexAngle, 0.01f);
+            ResetPendulum(pendulum, { 0.0f,1.0f,0.0f }, pendulum.length, pendulum.angle, pendulum.angularVelocity, pendulum.angularAcceleration);
+        }
         ImGui::End();
         DrawGrid(viewProjectionMatrix, viewportMatrix);
-        DrawSegment({ conicalPendulum.anchor, pos }, viewProjectionMatrix, viewportMatrix, WHITE);
+        DrawSegment({ pendulum.anchor, pos }, viewProjectionMatrix, viewportMatrix, WHITE);
         DrawSphere({ pos, 0.05f }, viewProjectionMatrix, viewportMatrix, WHITE);
 
         ///

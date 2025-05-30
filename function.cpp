@@ -854,9 +854,30 @@ void UpdatePendulum(Pendulum& pendulum, float dt) {
     pendulum.angle += pendulum.angularVelocity * dt;
 
 }
+//04_03
 
+void ResetConicalPendulum(ConicalPendulum& conicalPendulum, const Vector3& anchor, float length, float halfApexAngle, float initialAngle) {
+    conicalPendulum.anchor = anchor;
+    conicalPendulum.length = length;
+    conicalPendulum.halfApexAngle = halfApexAngle;
+    conicalPendulum.angle = initialAngle;
+    conicalPendulum.angularVelocity = std::sqrt(9.8f / (length * std::cos(halfApexAngle)));
+}
 
+void UpdateConicalPendulum(ConicalPendulum& conicalPendulum, float dt) {
+    conicalPendulum.angle += conicalPendulum.angularVelocity * dt;
+}
 
+Vector3 GetConicalPendulumPosition(const ConicalPendulum& conicalPendulum) {
+    float radius = std::sin(conicalPendulum.halfApexAngle) * conicalPendulum.length;
+    float height = std::cos(conicalPendulum.halfApexAngle) * conicalPendulum.length;
+
+    return {
+        conicalPendulum.anchor.x + std::cos(conicalPendulum.angle) * radius,
+        conicalPendulum.anchor.y - height,
+        conicalPendulum.anchor.z - std::sin(conicalPendulum.angle) * radius
+    };
+}
 
 
 #pragma endregion

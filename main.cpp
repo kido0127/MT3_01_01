@@ -3,8 +3,7 @@
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
 
-Pendulum pendulum;
-
+ConicalPendulum conicalPendulum;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -15,13 +14,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
   // uint32_t color = WHITE;
    // 変数定義
-    pendulum.anchor = { 0.0f,1.0f,0.0f };
-    pendulum.length = 0.8f;
-    pendulum.angle = 0.7f;
-    pendulum.angularVelocity = 0.0f;
-    pendulum.angularAcceleration = 0.0f;
-    Vector3 pos = GetPendulumPosition(pendulum);
-    float elaspedTime = 0.0f;
+    conicalPendulum.anchor = { 0.0f,1.0f,0.0f };
+    conicalPendulum.length = 0.8f;
+    conicalPendulum.halfApexAngle = 0.7f;
+    conicalPendulum.angle = 0.7f;
+    conicalPendulum.angularVelocity = 0.0f;
+   
+    Vector3 pos = GetConicalPendulumPosition(conicalPendulum);
+   float elaspedTime = 0.0f;
    
 
   
@@ -65,12 +65,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-        UpdatePendulum(pendulum, deltaTime);
+        UpdateConicalPendulum(conicalPendulum, deltaTime);
         elaspedTime += deltaTime;
         ///
         /// ↑更新処理ここまで
         ///
-        pos = GetPendulumPosition(pendulum);
+        pos = GetConicalPendulumPosition(conicalPendulum);
         ///
         /// ↓描画処理ここから
         ///
@@ -78,11 +78,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
        // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
        // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
         if (ImGui::Button("Start")) {
-            ResetPendulum(pendulum, { 0.0f,1.0f,0.0f }, pendulum.length, pendulum.angle, pendulum.angularVelocity, pendulum.angularAcceleration);
+            ResetConicalPendulum(conicalPendulum, { 0.0f,1.0f,0.0f }, conicalPendulum.length, conicalPendulum.halfApexAngle, 0.0f);
+
        }
-		ImGui::End();
+        ImGui::DragFloat("Length", &conicalPendulum.length, 0.01f);
+        ImGui::DragFloat("HalfApexAngle", &conicalPendulum.halfApexAngle, 0.01f);
+        ImGui::End();
         DrawGrid(viewProjectionMatrix, viewportMatrix);
-        DrawSegment({ pendulum.anchor, pos }, viewProjectionMatrix, viewportMatrix, WHITE);
+        DrawSegment({ conicalPendulum.anchor, pos }, viewProjectionMatrix, viewportMatrix, WHITE);
         DrawSphere({ pos, 0.05f }, viewProjectionMatrix, viewportMatrix, WHITE);
 
         ///

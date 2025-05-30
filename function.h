@@ -130,6 +130,15 @@ struct Pendulum {
     float angularVelocity;//角速度w
     float angularAcceleration;//各加速度
 };
+#pragma region ConicalPendulum(円錐振り子)
+struct ConicalPendulum {
+    Vector3 anchor;//アンカーポイント。固定された端の位置
+    float length;//紐の長さ
+    float halfApexAngle;//円錐の頂角の半分
+    float angle;//現在の角度
+    float angularVelocity;//角速度w
+};
+#pragma endregion
 #pragma endregion
 #pragma endregion
 #pragma region 定数
@@ -393,6 +402,10 @@ void UpdateSphereTocircleMove(Sphere& sphere, float time, float radius);
 void ResetPendulum(Pendulum& pendulum, const Vector3& anchor, float length, float initializeAngle, float angularVelocity, float angularAcceleration);
 Vector3 GetPendulumPosition(const Pendulum& pendulum);
 void UpdatePendulum(Pendulum& pendulum, float dt);
+
+void ResetConicalPendulum(ConicalPendulum& conicalPendulum, const Vector3& anchor, float length, float halfApexAngle, float initialAngle);
+void UpdateConicalPendulum(ConicalPendulum& conicalPendulum, float deltaTime);
+Vector3 GetConicalPendulumPosition(const ConicalPendulum & conicalPendulum);
 
 
 

@@ -408,6 +408,7 @@ void UpdateConicalPendulum(ConicalPendulum& conicalPendulum, float deltaTime);
 Vector3 GetConicalPendulumPosition(const ConicalPendulum & conicalPendulum);
 
 
+Vector3 Reflect(const Vector3 input, const Vector3 normal);
 
 
 

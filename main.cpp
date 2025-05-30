@@ -3,7 +3,9 @@
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
 
-ConicalPendulum conicalPendulum;
+Ball ball;
+Plane plane;
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -14,15 +16,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
   // uint32_t color = WHITE;
    // 変数定義
-    conicalPendulum.anchor = { 0.0f,1.0f,0.0f };
-    conicalPendulum.length = 0.8f;
-    conicalPendulum.halfApexAngle = 0.7f;
-    conicalPendulum.angle = 0.7f;
-    conicalPendulum.angularVelocity = 0.0f;
    
-    Vector3 pos = GetConicalPendulumPosition(conicalPendulum);
-   float elaspedTime = 0.0f;
-   
+  // float elaspedTime = 0.0f;
+    ball.acceleration = { 0.0f,-9.8f,0.0f };
+    plane.normal = { 0.0f,1.0f,0.0f };
+    plane.distance = 0.0f;
+    plane.A = { -1.0f,0.0f,-1.0f };
+    plane.B = { 1.0f,0.0f,-1.0f };
+    plane.C = { 0.0f,0.0f,1.0f };
 
   
     // キー入力結果を受け取る箱
@@ -65,12 +66,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-        UpdateConicalPendulum(conicalPendulum, deltaTime);
-        elaspedTime += deltaTime;
+
+        ball.velocity = Add(ball.velocity, Multiply(deltaTime, ball.acceleration));
+        ball.position = Add(ball.position, Multiply(deltaTime, ball.velocity));
+
+        if (CheckSphereToPlaneCollision(ball, plane.A, plane.B, plane.C)) {
+            // 反射ベクトルに変更
+            Vector3 reflected = Reflect(ball.velocity, plane.normal);
+            // 反発係数をかけて速度調整
+            float restitution = 0.8f; // 反発係数(例)
+            ball.velocity = Multiply(restitution, reflected);
+
+            // めり込み防止（法線方向に押し戻す）
+            float dist = Dot(ball.position, plane.normal) + plane.distance;
+            ball.position = Subtract(ball.position, Multiply(dist, plane.normal));
+
+        }
         ///
         /// ↑更新処理ここまで
         ///
-        pos = GetConicalPendulumPosition(conicalPendulum);
         ///
         /// ↓描画処理ここから
         ///
@@ -78,15 +92,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
        // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
        // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
         if (ImGui::Button("Start")) {
-            ResetConicalPendulum(conicalPendulum, { 0.0f,1.0f,0.0f }, conicalPendulum.length, conicalPendulum.halfApexAngle, 0.0f);
        }
-        ImGui::DragFloat("Length", &conicalPendulum.length, 0.01f);
-        ImGui::DragFloat("HalfApexAngle", &conicalPendulum.halfApexAngle, 0.01f);
         ImGui::End();
         DrawGrid(viewProjectionMatrix, viewportMatrix);
-        DrawSegment({ conicalPendulum.anchor, pos }, viewProjectionMatrix, viewportMatrix, WHITE);
-        DrawSphere({ pos, 0.05f }, viewProjectionMatrix, viewportMatrix, WHITE);
-
+      
         ///
         /// ↑描画処理ここまで
         ///

@@ -878,6 +878,11 @@ Vector3 GetConicalPendulumPosition(const ConicalPendulum& conicalPendulum) {
         conicalPendulum.anchor.z - std::sin(conicalPendulum.angle) * radius
     };
 }
+//04_04
+Vector3 Reflect(const Vector3 input, const Vector3 normal) {
+    //ベクトルの反射
+    return Subtract(input, Multiply(2.0f * Dot(input, normal), normal));
+}
 
 
 #pragma endregion

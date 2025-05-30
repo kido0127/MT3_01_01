@@ -3,7 +3,7 @@
 #include "imgui.h"
 const char kWindowTitle[] = "MT3";
 
-Sphere sphere;
+Pendulum pendulum;
 
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -15,9 +15,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Vector3 cameraRotate = { 0.26f, 0.0f, 0.0f };
   // uint32_t color = WHITE;
    // 変数定義
-    sphere = { {0.8f, 0.0f, 0.0f}, 0.1f };
-    float timer = 0.0f;
-    bool isMoving = false;
+    pendulum.anchor = { 0.0f,1.0f,0.0f };
+    pendulum.length = 0.8f;
+    pendulum.angle = 0.7f;
+    pendulum.angularVelocity = 0.0f;
+    pendulum.angularAcceleration = 0.0f;
+
+  
+   
 
   
     // キー入力結果を受け取る箱
@@ -60,10 +65,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-        if (isMoving) {
-            timer += 1.0f / 60.0f; // 60FPS前提（必要ならdeltaTimeに）
-           UpdateSphereTocircleMove(sphere, timer, 0.8f);
-        }
+        pendulum.angularAcceleration =
+            -(9.8f / pendulum.length) * std::sin(pendulum.angle);
+        pendulum.angularVelocity += pendulum.angularAcceleration * deltaTime;
+        pendulum.angle += pendulum.angularVelocity * deltaTime;
 
         ///
         /// ↑更新処理ここまで

@@ -20,8 +20,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     pendulum.angle = 0.7f;
     pendulum.angularVelocity = 0.0f;
     pendulum.angularAcceleration = 0.0f;
-
-  
+    Vector3 pos = GetPendulumPosition(pendulum);
+    float elaspedTime = 0.0f;
    
 
   
@@ -65,15 +65,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
-        pendulum.angularAcceleration =
-            -(9.8f / pendulum.length) * std::sin(pendulum.angle);
-        pendulum.angularVelocity += pendulum.angularAcceleration * deltaTime;
-        pendulum.angle += pendulum.angularVelocity * deltaTime;
-
+        UpdatePendulum(pendulum, deltaTime);
+        elaspedTime += deltaTime;
         ///
         /// ↑更新処理ここまで
         ///
-
+        pos = GetPendulumPosition(pendulum);
         ///
         /// ↓描画処理ここから
         ///
@@ -81,13 +78,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
        // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
        // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
         if (ImGui::Button("Start")) {
-            isMoving = true;
-            timer = 0.0f; // 開始時にリセット
+            ResetPendulum(pendulum, { 0.0f,1.0f,0.0f }, pendulum.length, pendulum.angle, pendulum.angularVelocity, pendulum.angularAcceleration);
        }
 		ImGui::End();
         DrawGrid(viewProjectionMatrix, viewportMatrix);
-        DrawSphere(sphere, viewProjectionMatrix, viewportMatrix, WHITE); // この関数がある前提
-
+        DrawSegment({ pendulum.anchor, pos }, viewProjectionMatrix, viewportMatrix, WHITE);
+        DrawSphere({ pos, 0.05f }, viewProjectionMatrix, viewportMatrix, WHITE);
 
         ///
         /// ↑描画処理ここまで

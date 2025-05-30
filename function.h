@@ -143,6 +143,8 @@ static const int kRowHeight = 20;
 const int kWindowWidth = 1280;
 const int kWindowHeight = 720;
 
+//時間
+const float deltaTime = 1.0f/60.0f;
 
 
 
@@ -387,6 +389,13 @@ Vector3 GetTranslateFromMatrix(const Matrix4x4& m);
 
 void ResetSimulation(Spring& spring, Ball& ball, Segment& segment, Sphere& sphere);
 void UpdateSphereTocircleMove(Sphere& sphere, float time, float radius);
+
+void ResetPendulum(Pendulum& pendulum, const Vector3& anchor, float length, float initializeAngle, float angularVelocity, float angularAcceleration);
+Vector3 GetPendulumPosition(const Pendulum& pendulum);
+void UpdatePendulum(Pendulum& pendulum, float dt);
+
+
+
 
 
 #pragma endregion

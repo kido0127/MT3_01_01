@@ -830,4 +830,33 @@ void UpdateSphereTocircleMove(Sphere& sphere, float time,float radius) {
     sphere.center.y = radius * std::sin(float(M_PI) * time);
     sphere.center.z = 0.0f;
 }
+
+//04_02
+void ResetPendulum(Pendulum& pendulum, const Vector3& anchor, float length, float initializeAngle, float angularVelocity, float angularAcceleration) {
+    pendulum.anchor = anchor;
+    pendulum.length = length;
+    pendulum.angle = initializeAngle;
+    pendulum.angularAcceleration = angularAcceleration;
+    pendulum.angularVelocity = angularVelocity;
+}
+
+Vector3 GetPendulumPosition(const Pendulum& pendulum) {
+    return {
+        pendulum.anchor.x + pendulum.length * std::sin(pendulum.angle),
+        pendulum.anchor.y - pendulum.length * std::cos(pendulum.angle),
+        pendulum.anchor.z
+    };
+}
+void UpdatePendulum(Pendulum& pendulum, float dt) {
+    pendulum.angularAcceleration =
+        -(9.8f / pendulum.length) * std::sin(pendulum.angle);
+    pendulum.angularVelocity += pendulum.angularAcceleration * dt;
+    pendulum.angle += pendulum.angularVelocity * dt;
+
+}
+
+
+
+
+
 #pragma endregion

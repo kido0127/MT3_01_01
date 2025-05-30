@@ -79,7 +79,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
        // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
         if (ImGui::Button("Start")) {
             ResetConicalPendulum(conicalPendulum, { 0.0f,1.0f,0.0f }, conicalPendulum.length, conicalPendulum.halfApexAngle, 0.0f);
-
        }
         ImGui::DragFloat("Length", &conicalPendulum.length, 0.01f);
         ImGui::DragFloat("HalfApexAngle", &conicalPendulum.halfApexAngle, 0.01f);

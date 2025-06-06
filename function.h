@@ -409,7 +409,7 @@ Vector3 GetConicalPendulumPosition(const ConicalPendulum & conicalPendulum);
 
 
 Vector3 Reflect(const Vector3 input, const Vector3 normal);
-
+bool CheckSphereToPlaneCollision(const Sphere& sphere, const Plane& plane);
 
 
 #pragma endregion

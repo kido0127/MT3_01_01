@@ -18,12 +18,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
    // 変数定義
    
   // float elaspedTime = 0.0f;
-    ball.acceleration = { 0.0f,-9.8f,0.0f };
-    plane.normal = { 0.0f,1.0f,0.0f };
+    ball.position = { 0.0f,1.2f,0.3f };
+    ball.mass = 2.0f;
+    ball.radius = 0.05f;
+    Vector3 gravity = { 0.0f, -9.8f, 0.0f };
+    ball.acceleration = gravity;
+
+    float e = 0.7f; // 反発係数（0〜1）
+    //0.5だと滑る。0.8だとすこし反発
+
+    plane.normal = Normalize({ -0.2f,0.9f,-0.3f });
     plane.distance = 0.0f;
-    plane.A = { -1.0f,0.0f,-1.0f };
-    plane.B = { 1.0f,0.0f,-1.0f };
-    plane.C = { 0.0f,0.0f,1.0f };
+
 
   
     // キー入力結果を受け取る箱
@@ -66,22 +72,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             0, 0, float(kWindowWidth), float(kWindowHeight), 0.0f, 1.0f
         );
 #pragma endregion
+        ball.velocity += ball.acceleration*deltaTime;
+        ball.position += ball.velocity*deltaTime;
 
-        ball.velocity = Add(ball.velocity, Multiply(deltaTime, ball.acceleration));
-        ball.position = Add(ball.position, Multiply(deltaTime, ball.velocity));
+        Sphere tempSphere = { ball.position, ball.radius };
+        Vector3 incidentVelocity = ball.velocity;
 
-        if (CheckSphereToPlaneCollision(ball, plane.A, plane.B, plane.C)) {
-            // 反射ベクトルに変更
+        if (CheckSphereToPlaneCollision(tempSphere, plane)) {
             Vector3 reflected = Reflect(ball.velocity, plane.normal);
-            // 反発係数をかけて速度調整
-            float restitution = 0.8f; // 反発係数(例)
-            ball.velocity = Multiply(restitution, reflected);
-
-            // めり込み防止（法線方向に押し戻す）
-            float dist = Dot(ball.position, plane.normal) + plane.distance;
-            ball.position = Subtract(ball.position, Multiply(dist, plane.normal));
-
+            Vector3 projectToNormal = Project(reflected, plane.normal);
+            Vector3 movingDirection = reflected - projectToNormal;
+            ball.velocity = projectToNormal * e + movingDirection;
         }
+
+
+      
+
         ///
         /// ↑更新処理ここまで
         ///
@@ -89,13 +95,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         /// ↓描画処理ここから
         ///
         ImGui::Begin("Window");
-       // ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
-       // ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+        ImGui::DragFloat3("CameraTranslate", &cameraTranslate.x, 0.01f);
+        ImGui::DragFloat3("CameraRotate", &cameraRotate.x, 0.01f);
+        ImGui::DragFloat3("Plane Normal", &plane.normal.x, 0.01f);
+        ImGui::DragFloat3("Plane Distance", &plane.distance, 0.01f);
         if (ImGui::Button("Start")) {
+            ball.position = { 0.0f,1.2f,0.3f };
+            ball.velocity = { 0.0f,0.0f,0.0f };
+            ball.acceleration = { 0.0f,-9.8f,0.0f };
        }
+        DrawSphere(tempSphere, viewProjectionMatrix, viewportMatrix, WHITE);
+        DrawPlane(plane, viewProjectionMatrix, viewportMatrix, WHITE, 1.0f);
         ImGui::End();
         DrawGrid(viewProjectionMatrix, viewportMatrix);
-      
+        Novice::ScreenPrintf(0, 0, "%f", ball.position.x);
+        Novice::ScreenPrintf(0, 20, "%f", ball.position.y);
+        Novice::ScreenPrintf(0, 40, "%f", ball.position.z
+        );
         ///
         /// ↑描画処理ここまで
         ///

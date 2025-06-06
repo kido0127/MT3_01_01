@@ -883,6 +883,12 @@ Vector3 Reflect(const Vector3 input, const Vector3 normal) {
     //ベクトルの反射
     return Subtract(input, Multiply(2.0f * Dot(input, normal), normal));
 }
+bool CheckSphereToPlaneCollision(const Sphere& sphere, const Plane& plane) {
+    Vector3 normal = Normalize(plane.normal);
+    float D = -plane.distance;
+    float distance = Dot(normal, sphere.center) + D;
+    return std::fabs(distance) <= sphere.radius;
+}
 
 
 #pragma endregion

@@ -59,6 +59,7 @@ struct Vector4 {
 struct Matrix4x4 {
     float m[4][4];
 };
+#pragma endregion
 #pragma region Sphere（球関連）
 struct Sphere {
     Vector3 center;
@@ -158,6 +159,9 @@ const float deltaTime = 1.0f/60.0f;
 
 
 #pragma endregion
+
+
+
 #pragma region 関数宣言 
 /// <summary>
 /// VectorScreenPrintf: Vector座標の表示
@@ -370,15 +374,162 @@ Vector3 TransformVector(const Vector3& vector, const Matrix4x4& matrix);
 /// <param name="v2">ベクトル2</param>
 /// <returns>クロス積の結果</returns>
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
+/// <summary>
+/// スクリーン座標に変換する
+/// </summary>
+/// <param name="worldPosition">変換したいモノのワールド座標</param>
+/// <param name="viewProjectionMatrix"></param>
+/// <param name="viewportMatrix"></param>
+/// <returns></returns>
 Vector3 TransformToScreen(const Vector3& worldPosition, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
+
+/// <summary>
+/// ベクトル v1 をベクトル v2 上に射影（プロジェクション）した結果のベクトルを返します。
+/// この関数は、v1 の成分のうち、v2 の方向に沿った成分だけを取り出す操作に相当します。
+/// たとえば、力の分解や、ある軸方向への影響成分を抽出したい場面などで利用されます。
+/// v2 がゼロベクトルの場合、結果もゼロベクトルとなります。
+/// </summary>
+/// <param name="v1">射影される対象のベクトル。これを v2 の方向へ投影します。</param>
+/// <param name="v2">射影先となるベクトル。このベクトルの方向に対して v1 を投影します。</param>
+/// <returns>
+/// ベクトル v1 を v2 上に射影した結果のベクトル。
+/// 計算式としては、(dot(v1, v2) / dot(v2, v2)) * v2 に相当します。
+/// v2 がゼロベクトルの場合は、(0, 0, 0) を返します。
+/// </returns>
 Vector3 Project(const Vector3& v1, const Vector3& v2);
+
+/// <summary>
+/// 指定された点 point に最も近い位置にある、線分 segment 上の点を計算して返します。
+/// この関数は、点と線分との最短距離を求めるために用いられ、
+/// その距離が 0 のときは、point が segment 上にあることを意味します。
+/// 計算では、まず無限直線上の最近点を求めた後、それが線分外にある場合は端点のいずれかを返します。
+/// </summary>
+/// <param name="point">基準となる任意の空間上の点。この点から線分に最も近い点を探します。</param>
+/// <param name="segment">対象となる線分。始点と終点を持つ有限長の線分です。</param>
+/// <returns>
+/// 線分 segment 上で、指定された点 point に最も近い位置にある点（= 最近接点）。
+/// 計算には内積やクランプ（0～1）による補間係数を使い、線分内に制限した上で最近点を算出します。
+/// </returns>
 Vector3 ClosestPoint(const Vector3& point, const Segment& segment);
+
+/// <summary>
+/// 3D 空間上にグリッド（格子線）を描画します。
+/// この関数は、主にデバッグ表示やエディタビューなどで、空間の基準となる床面のようなビジュアルガイドを描くために使用されます。
+/// 描画は、渡されたビュー・プロジェクション行列およびビューポート行列を用いて、カメラ視点に合わせて行われます。
+/// </summary>
+/// <param name="viewProjectionMatrix">
+/// カメラのビュー行列とプロジェクション行列を掛け合わせた行列。
+/// モデル座標をクリップ空間に変換するために使用します。
+/// </param>
+/// <param name="viewportMatrix">
+/// ビューポート行列。クリップ空間の座標を画面座標に変換するために使用します。
+/// 通常はスクリーン解像度や描画領域に依存します。
+/// </param>
 void DrawGrid(const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix);
-void DrawSphere(const  Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+/// <summary>
+/// 指定された球体（Sphere）を、指定のビュー・プロジェクション行列およびビューポート行列を用いて描画します。
+/// 主にデバッグ用の可視化として使用され、球体の境界や当たり判定の確認、空間的な配置の把握などに役立ちます。
+/// 描画はワイヤーフレームで行われることが一般的です。
+/// </summary>
+/// <param name="sphere">
+/// 描画対象の球体。中心座標と半径を持つ Sphere 構造体（またはクラス）です。
+/// </param>
+/// <param name="viewProjectionMatrix">
+/// カメラのビュー行列とプロジェクション行列を掛け合わせた行列。
+/// 球体のモデル座標をクリップ空間に変換するために使用します。
+/// </param>
+/// <param name="viewportMatrix">
+/// ビューポート行列。クリップ空間の座標を画面座標に変換するために使用します。
+/// 通常はウィンドウサイズや描画領域に基づいて設定されます。
+/// </param>
+/// <param name="color">
+/// 球体の描画色。RGBA形式（またはARGB形式）で指定される 32bit 整数カラーコードです。
+/// デバッグ用などで視認性を高めるために色分けが可能です。
+/// </param>
+void DrawSphere(const Sphere& sphere, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color);
+
+/// <summary>
+/// 2つの球体（Sphere）が衝突しているかどうかを判定します。
+/// 球体同士の衝突判定は、両球体の中心間の距離と、それぞれの半径の和を比較することで行われます。
+/// 中心間の距離が半径の和以下であれば、球体同士は衝突（交差）していると判断されます。
+/// </summary>
+/// <param name="sphere1">
+/// 判定対象となる1つ目の球体。中心座標と半径を持ちます。
+/// </param>
+/// <param name="sphere2">
+/// 判定対象となる2つ目の球体。sphere1と同様に、中心座標と半径を持ちます。
+/// </param>
+/// <returns>
+/// 衝突していれば true、衝突していなければ false を返します。
+/// なお、球体の表面が触れている場合（距離がぴったり半径の和と等しい）も true を返します。
+/// </returns>
 //bool CheckSphereToSphereCollision(const Sphere& sphere1, const Sphere& sphere2);
+
+/// <summary>
+/// 球体（Sphere）が、3点（A, B, C）によって定義される平面と衝突（交差）しているかどうかを判定します。
+/// 判定は、球の中心から平面への垂直距離が、球の半径以下であるかどうかに基づいて行われます。
+/// 平面は、3点 A, B, C によって一意に定義される三角形の含まれる無限平面です。
+/// </summary>
+/// <param name="sphere">
+/// 衝突判定対象の球体。中心座標と半径を持ちます。
+/// </param>
+/// <param name="A">
+/// 平面を構成する三角形の1点目。Vector3 型の座標。
+/// </param>
+/// <param name="B">
+/// 平面を構成する三角形の2点目。Vector3 型の座標。
+/// </param>
+/// <param name="C">
+/// 平面を構成する三角形の3点目。Vector3 型の座標。
+/// </param>
+/// <returns>
+/// 球体と平面が衝突している（交差している）場合は true を返します。
+/// 衝突していない（中心から平面までの距離が半径を超えている）場合は false を返します。
+/// なお、この判定は三角形との交差ではなく、あくまで三角形が含まれる「平面」との衝突を判定します。
+/// </returns>
 bool CheckSphereToPlaneCollision(const Sphere& sphere, const Vector3& A, const Vector3& B, const Vector3& C);
 
-void DrawPlane(const Plane& plane, const Matrix4x4& viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size);
+/// <summary>
+/// 指定された平面（Plane）を、ビュー・プロジェクション行列およびビューポート行列を用いて描画します。
+/// この関数は、デバッグ表示やエディタ上での可視化目的に利用され、
+/// 平面の位置や傾きを視覚的に確認するためのガイドラインや面表示を行います。
+/// 描画される平面は、与えられた中心と法線ベクトルをもとに、指定されたサイズで四角形として表示されます。
+/// </summary>
+/// <param name="plane">
+/// 描画対象となる平面。位置ベクトルおよび法線（法線ベクトル）を含む Plane 型の構造体。
+/// </param>
+/// <param name="viewProjectionMatrix">
+/// ビュー行列とプロジェクション行列を掛け合わせた行列。モデル空間からクリップ空間への変換に使用されます。
+/// </param>
+/// <param name="viewportMatrix">
+/// ビューポート行列。クリップ空間から画面座標への変換に使用されます。
+/// 通常はウィンドウの幅・高さなどに基づいて構築されます。
+/// </param>
+/// <param name="color">
+/// 描画する平面の色。RGBA 形式（または ARGB）で指定される 32bit のカラー値。
+/// </param>
+/// <param name="size">
+/// 描画する平面の大きさ（スケール）。中心からの距離として解釈され、
+/// size が大きいほど平面の描画範囲（正方形の幅と高さ）は広くなります。
+/// </param>
+void DrawPlane(const Plane& plane, const Matrix4x4&  viewProjectionMatrix, const Matrix4x4& viewportMatrix, uint32_t color, float size);
+/// <summary>
+/// 指定されたベクトル v を、スカラー値 scalar 倍した結果のベクトルを返します。
+/// 各成分（x, y, z）を scalar で一括して乗算することで、ベクトルの大きさ（長さ）を拡大・縮小します。
+/// ベクトルの方向は変わらず、大きさのみが変化します（scalar が負の場合は方向も反転します）。
+/// </summary>
+/// <param name="v">
+/// スカラー倍の対象となる 3 次元ベクトル。各成分は float 型を想定します。
+/// </param>
+/// <param name="scalar">
+/// ベクトルに掛けるスカラー値。大きさを調整するための係数です。
+/// </param>
+/// <returns>
+/// 元のベクトル v に scalar を掛けた結果のベクトル（x, y, z 成分すべてに scalar を乗算）。
+/// 例えば v = (1, 2, 3), scalar = 2 のとき、戻り値は (2, 4, 6) となります。
+/// </returns>
 Vector3 Vector3ToScalarMultiply(const Vector3& v, float scalar);
 void MakePointsFromPlane(const Plane& plane, Vector3* outA, Vector3* outB, Vector3* outC);
 bool CheckSegmentToPlaneCollision(const Segment& segment, const Plane& plane);

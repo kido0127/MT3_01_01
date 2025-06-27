@@ -25,7 +25,7 @@ void MatrixScreenPrintf(int x, int y, const Matrix4x4& matrix, const char* label
     Novice::ScreenPrintf(x, y, "%s", label);
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
-            Novice::ScreenPrintf(x + j * kColumnWidth, y + (i + 1) * kRowHeight, "%6.02f", matrix.m[i][j]);
+            Novice::ScreenPrintf(x + j * kColumnWidth, y + (i + 1) * kRowHeight, "%6.03f", matrix.m[i][j]);
         }
     }
 }
@@ -889,6 +889,43 @@ bool CheckSphereToPlaneCollision(const Sphere& sphere, const Plane& plane) {
     float distance = Dot(normal, sphere.center) + D;
     return std::fabs(distance) <= sphere.radius;
 }
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle) {
+    Matrix4x4 rotationMatrix = {};
+
+    Vector3 unitAxis = Normalize(axis);   // 単位ベクトル化した回転軸
+
+    float x = unitAxis.x;
+    float y = unitAxis.y;
+    float z = unitAxis.z;
+
+    float c = cosf(angle);         // cos(θ)
+    float s = sinf(angle);         // sin(θ)
+    float t = 1.0f - c;            // 1 - cos(θ)
+
+    // 行列の各要素を列優先で代入（m[col][row]）
+    rotationMatrix.m[0][0] = c + x * x * t;
+    rotationMatrix.m[0][1] = y * x * t + z * s;
+    rotationMatrix.m[0][2] = z * x * t - y * s;
+    rotationMatrix.m[0][3] = 0.0f;
+
+    rotationMatrix.m[1][0] = x * y * t - z * s;
+    rotationMatrix.m[1][1] = c + y * y * t;
+    rotationMatrix.m[1][2] = z * y * t + x * s;
+    rotationMatrix.m[1][3] = 0.0f;
+
+    rotationMatrix.m[2][0] = x * z * t + y * s;
+    rotationMatrix.m[2][1] = y * z * t - x * s;
+    rotationMatrix.m[2][2] = c + z * z * t;
+    rotationMatrix.m[2][3] = 0.0f;
+
+    rotationMatrix.m[3][0] = 0.0f;
+    rotationMatrix.m[3][1] = 0.0f;
+    rotationMatrix.m[3][2] = 0.0f;
+    rotationMatrix.m[3][3] = 1.0f;
+
+    return rotationMatrix;
+}
+
 
 
 #pragma endregion

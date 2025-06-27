@@ -561,34 +561,14 @@ Vector3 GetConicalPendulumPosition(const ConicalPendulum & conicalPendulum);
 
 Vector3 Reflect(const Vector3 input, const Vector3 normal);
 bool CheckSphereToPlaneCollision(const Sphere& sphere, const Plane& plane);
-
-
+/// <summary>
+/// 任意軸回転行列の作成
+/// </summary>
+/// <param name="axis"></param>
+/// <param name="angle"></param>
+/// <returns></returns>
+Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 #pragma endregion
 
-#pragma region 関数位置リスト
-// 20行目: VectorScreenPrintf: Vector座標の表示
-// 27行目: MatrixScreenPrintf: Matrix座標の表示
-// 34行目: Add: Vector型の加算
-// 40行目: Subtract: Vector型の減算
-// 46行目: Multiply: Vector型のスカラー倍
-// 52行目: Dot: 内積の計算
-// 58行目: Length: 長さの計算
-// 64行目: Normalize: 正規化
-// 70行目: Add: Matrix型の加算
-// 76行目: Subtract: Matrix型の減算
-// 82行目: Multiply: Matrix型の乗算
-// 88行目: MakeTranslateMatrix: 平行移動行列を作成
-// 94行目: MakeScaleMatrix: 拡大縮小行列を作成
-// 100行目: MakeRotateXMatrix: X軸回転行列を作成
-// 106行目: MakeRotateYMatrix: Y軸回転行列を作成
-// 112行目: MakeRotateZMatrix: Z軸回転行列を作成
-// 118行目: MakeRotateXYZMatrix: X, Y, Z軸の回転行列を合成
-// 124行目: MakeAffineMatrix: スケール、回転、平行移動を合成したアフィン行列を作成
-// 130行目: Transpose: 行列の転置を計算
-// 136行目: Inverse: 行列の逆行列を計算
-// 142行目: MakePerspectiveFovMatrix: 透視投影行列を作成
-// 148行目: MakeViewportMatrix: ビューポート行列を作成
-// 154行目: TransformVector: ベクトルを行列で変換
-// 160行目: Cross: クロス積を計算
-#pragma endregion
+
 
